@@ -9,3 +9,6 @@ data/*.db-shm
 dist/
 *.log
 .playwright-mcp/
+
+# The JSON snapshot IS committed -- it is how progress moves between machines.
+!data/snapshot/

@@ -1,0 +1,8 @@
+[
+ {
+  "question_id": "6ae73dfe-3738-46a1-abca-5821a4506ac3",
+  "response_key": "{\"kind\":\"choice\",\"indices\":[0]}",
+  "note": "{\"diagnosis\":\"You got 18 because you used the identity p³+q³=(p+q)³−pq(p+q) instead of the correct p³+q³=(p+q)³−3pq(p+q), dropping the factor of 3 that comes from expanding the cube. That left you solving pq(5)=90 instead of 15pq=90. Rederiving the identity by expanding (p+q)³ yourself, rather than recalling it from memory, would have caught the missing coefficient.\",\"errorTag\":\"concept\",\"nextTime\":\"When using a symmetric-sum identity like p³+q³, quickly re-derive it by expanding (p+q)³ instead of recalling it from memory.\"}",
+  "created_at": "2026-08-22T20:38:05.416Z"
+ }
+]

@@ -2,9 +2,19 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { QuestionView } from './QuestionView.tsx'
 import { MathText } from './MathText.tsx'
 import { StrategyReader } from './StrategyReader.tsx'
-import { api, type AnswerResponse, type Coaching, type GradeResult, type MasteryRow, type PublicQuestion, type Status } from './api.ts'
+import { MockExam } from './MockExam.tsx'
+import {
+  api,
+  type AnswerResponse,
+  type Coaching,
+  type GradeResult,
+  type MasteryRow,
+  type PublicQuestion,
+  type Stats,
+  type Status,
+} from './api.ts'
 
-type Screen = 'start' | 'drill' | 'progress' | 'strategies'
+type Screen = 'start' | 'drill' | 'progress' | 'strategies' | 'mock'
 
 export function App() {
   const [screen, setScreen] = useState<Screen>('start')
@@ -44,6 +54,9 @@ export function App() {
                 </span>
               </>
             )}
+            <button type="button" onClick={() => setScreen('mock')} className="underline underline-offset-2">
+              Mock exam
+            </button>
             <button type="button" onClick={() => setScreen('strategies')} className="underline underline-offset-2">
               Strategies
             </button>
@@ -68,6 +81,7 @@ export function App() {
         {screen === 'drill' && <Drill onError={setError} onStatusChange={refreshStatus} />}
         {screen === 'progress' && <Progress />}
         {screen === 'strategies' && <Strategies />}
+        {screen === 'mock' && <MockExam onError={setError} />}
       </main>
     </div>
   )
@@ -390,9 +404,12 @@ function ResultPanel({
 
 function Progress() {
   const [rows, setRows] = useState<MasteryRow[] | null>(null)
+  const [stats, setStats] = useState<Stats | null>(null)
+  const [openStrategy, setOpenStrategy] = useState<string | null>(null)
 
   useEffect(() => {
     api.mastery().then((r) => setRows(r.mastery)).catch(() => setRows([]))
+    api.stats().then(setStats).catch(() => undefined)
   }, [])
 
   if (!rows) return <p className="text-slate-500">Loading…</p>
@@ -401,7 +418,108 @@ function Progress() {
   const groups = [...new Set(rows.map((r) => r.group))]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {stats && stats.totalAttempts > 0 && (
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-semibold tracking-tight">Why you miss questions</h2>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+              More useful than a topic breakdown. Knowing that most of your misses are arithmetic slips
+              rather than concept gaps changes what is worth practising — extra topic drilling does not fix
+              a slip problem.
+            </p>
+          </div>
+
+          {stats.sections
+            .filter((sec) => sec.attempts > 0)
+            .map((sec) => {
+              const misses = sec.attempts - sec.correct
+              const pace = stats.pacing.find((p) => p.section === sec.section)
+              return (
+                <div key={sec.section} className="rounded-lg border border-slate-200 p-4 dark:border-slate-800">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <h3 className="font-medium capitalize">{sec.section}</h3>
+                    <div className="text-sm text-slate-500">
+                      {sec.correct}/{sec.attempts} correct ({Math.round(sec.accuracy * 100)}%)
+                      {pace && (
+                        <span
+                          className={
+                            'ml-3 ' + (pace.medianSeconds > pace.parSeconds ? 'text-amber-600 dark:text-amber-400' : '')
+                          }
+                          title={`The real test gives you about ${pace.parSeconds} seconds per question in this section`}
+                        >
+                          {pace.medianSeconds}s median · {pace.parSeconds}s budget
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {misses === 0 ? (
+                    <p className="mt-2 text-sm text-slate-500">Nothing missed yet.</p>
+                  ) : (
+                    <div className="mt-3 space-y-1.5">
+                      {sec.errors.map((e) => (
+                        <div key={e.tag} className="flex items-center gap-3 text-sm">
+                          <div className="w-48 shrink-0 truncate">{e.label}</div>
+                          <div className="h-2.5 flex-1 rounded-full bg-slate-200 dark:bg-slate-800">
+                            <div
+                              className="h-2.5 rounded-full bg-rose-500/70"
+                              style={{ width: `${Math.max(2, e.share * 100)}%` }}
+                            />
+                          </div>
+                          <div className="w-16 shrink-0 text-right tabular-nums text-slate-500">
+                            {Math.round(e.share * 100)}% · {e.count}
+                          </div>
+                        </div>
+                      ))}
+
+                      {sec.errors[0] && sec.errors[0].strategies.length > 0 && (
+                        <p className="pt-2 text-sm">
+                          <span className="text-slate-500">Your most common miss points at: </span>
+                          {sec.errors[0].strategies.map((st, i) => (
+                            <span key={st}>
+                              {i > 0 && <span className="text-slate-400">, </span>}
+                              <button
+                                type="button"
+                                onClick={() => setOpenStrategy(st)}
+                                className="text-sky-600 underline underline-offset-2 dark:text-sky-400"
+                              >
+                                {st}
+                              </button>
+                            </span>
+                          ))}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+
+          {stats.weakest.length > 0 && (
+            <div>
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Weakest topics (at least 3 attempts)
+              </h3>
+              <div className="space-y-1 text-sm">
+                {stats.weakest.map((w) => (
+                  <div key={w.subtopic} className="flex justify-between">
+                    <span>
+                      {w.label} <span className="text-slate-400">· {w.group}</span>
+                    </span>
+                    <span className="tabular-nums text-slate-500">
+                      {w.correct}/{w.attempts}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {openStrategy && <StrategyReader title={openStrategy} onClose={() => setOpenStrategy(null)} />}
+
       <div>
         <h2 className="text-xl font-semibold tracking-tight">Where you stand</h2>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">

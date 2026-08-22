@@ -14,7 +14,9 @@
     "review": "node scripts/review.ts",
     "dev": "node scripts/dev.ts",
     "build": "vite build",
-    "start": "node src/server/index.ts"
+    "start": "node src/server/index.ts",
+    "snapshot": "node scripts/snapshot.ts",
+    "restore": "node scripts/snapshot.ts restore"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",

@@ -55,6 +55,62 @@ export type MasteryRow = {
   attempts: number
 }
 
+export type Stats = {
+  totalAttempts: number
+  sections: Array<{
+    section: 'quant' | 'verbal'
+    attempts: number
+    correct: number
+    accuracy: number
+    medianSeconds: number
+    errors: Array<{ tag: string; label: string; count: number; share: number; strategies: string[] }>
+  }>
+  weakest: Array<{
+    subtopic: string
+    label: string
+    group: string
+    section: string
+    attempts: number
+    correct: number
+    accuracy: number
+  }>
+  recent: Array<{ day: string; attempts: number; accuracy: number }>
+  pacing: Array<{ section: string; medianSeconds: number; parSeconds: number }>
+}
+
+export type MockSectionState = {
+  index: number
+  section: 'quant' | 'verbal'
+  order: 1 | 2
+  minutes: number
+  questions: Array<PublicQuestion & { indexInSection: number }>
+  startedAt: string | null
+  submittedAt: string | null
+  correct: number | null
+  level: number
+}
+
+export type MockExamState = {
+  id: string
+  createdAt: string
+  sections: MockSectionState[]
+  current: number
+  finished: boolean
+}
+
+export type MockSectionResult = {
+  correct: number
+  total: number
+  perQuestion: Array<{
+    questionId: string
+    correct: boolean
+    correctIndices?: number[]
+    correctValue?: number
+    explanation: string
+    yourResponse: AnswerResponse | null
+  }>
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
     ...init,
@@ -77,6 +133,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   status: () => request<Status>('/api/status'),
   mastery: () => request<{ mastery: MasteryRow[] }>('/api/mastery'),
+  stats: () => request<Stats>('/api/stats'),
 
   startSession: (section: string) =>
     request<{ sessionId: string; section: string }>('/api/session', {
@@ -102,6 +159,34 @@ export const api = {
     request<Coaching>('/api/coach', {
       method: 'POST',
       body: JSON.stringify({ questionId, response }),
+    }),
+
+  mockReadiness: () =>
+    request<{ quant: number; verbal: number; needQuant: number; needVerbal: number }>('/api/mock/readiness'),
+
+  startMock: () => request<{ exam: MockExamState }>('/api/mock', { method: 'POST' }),
+
+  startMockSection: (examId: string, index: number) =>
+    request<{ startedAt: string; minutes: number }>(`/api/mock/${examId}/section/${index}/start`, {
+      method: 'POST',
+    }),
+
+  submitMockSection: (
+    examId: string,
+    index: number,
+    answers: Record<string, AnswerResponse | null>,
+    seconds: Record<string, number>,
+  ) =>
+    request<{
+      result: MockSectionResult
+      exam: MockExamState
+      scores: {
+        quant: { score: number; correct: number; total: number }
+        verbal: { score: number; correct: number; total: number }
+      } | null
+    }>(`/api/mock/${examId}/section/${index}/submit`, {
+      method: 'POST',
+      body: JSON.stringify({ answers, seconds }),
     }),
 
   strategies: () => request<{ strategies: Array<{ title: string; tags: string[]; summary: string }> }>('/api/strategies'),

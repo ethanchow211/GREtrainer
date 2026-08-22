@@ -12,6 +12,8 @@ import { toPublic, grade, type Response as AnswerResponse } from './present.ts'
 import { recordMastery, getSchedule, saveSchedule, nextSchedule, qualityFrom, allMastery } from './mastery.ts'
 import { readyCount, runBuffer, startBufferLoop, status as bufferStatus, generateNow } from './buffer.ts'
 import { coach, describeResponse } from './coach.ts'
+import { computeStats } from './stats.ts'
+import { startMock, getMock, submitSection, estimateScore, mockReadiness } from './mock.ts'
 import { requireSubtopic, SUBTOPICS, type Section } from '../content/taxonomy.ts'
 import { ERROR_TAGS, errorTagsFor } from '../content/errors.ts'
 import type { StoredQuestion } from './store.ts'
@@ -299,6 +301,79 @@ app.get('/api/strategies/:title', async (req, res) => {
 
 app.get('/api/taxonomy', (_req, res) => {
   res.json({ subtopics: SUBTOPICS })
+})
+
+app.get('/api/stats', (_req, res) => {
+  res.json(computeStats())
+})
+
+// ----------------------------------------------------------------------- mock exams
+
+app.get('/api/mock/readiness', (_req, res) => {
+  res.json(mockReadiness())
+})
+
+app.post('/api/mock', (_req, res) => {
+  const exam = startMock()
+  const short = exam.sections.filter((s) => s.order === 1 && s.questions.length < 1)
+  if (short.length > 0) {
+    res.status(503).json({
+      error:
+        'There are not enough verified questions yet to assemble a mock. Drill for a while, or leave the app open so the background generator can build up a pool.',
+    })
+    return
+  }
+  res.json({ exam })
+})
+
+app.get('/api/mock/:id', (req, res) => {
+  const exam = getMock(req.params.id)
+  if (!exam) {
+    res.status(404).json({ error: 'that mock exam has expired. Start a new one.' })
+    return
+  }
+  res.json({ exam })
+})
+
+app.post('/api/mock/:id/section/:n/start', (req, res) => {
+  const exam = getMock(req.params.id)
+  if (!exam) {
+    res.status(404).json({ error: 'that mock exam has expired. Start a new one.' })
+    return
+  }
+  const sec = exam.sections.find((s) => s.index === Number(req.params.n))
+  if (!sec) {
+    res.status(404).json({ error: 'no such section' })
+    return
+  }
+  // The clock starts server-side, so reloading the page cannot buy extra time.
+  sec.startedAt ??= nowIso()
+  res.json({ startedAt: sec.startedAt, minutes: sec.minutes })
+})
+
+app.post('/api/mock/:id/section/:n/submit', (req, res) => {
+  const exam = getMock(req.params.id)
+  if (!exam) {
+    res.status(404).json({ error: 'that mock exam has expired. Start a new one.' })
+    return
+  }
+  const body = (req.body ?? {}) as {
+    answers?: Record<string, AnswerResponse | null>
+    seconds?: Record<string, number>
+  }
+
+  try {
+    const result = submitSection(exam, Number(req.params.n), body.answers ?? {}, body.seconds ?? {})
+    res.json({
+      result,
+      exam,
+      scores: exam.finished
+        ? { quant: estimateScore(exam, 'quant'), verbal: estimateScore(exam, 'verbal') }
+        : null,
+    })
+  } catch (e) {
+    res.status(400).json({ error: (e as Error).message })
+  }
 })
 
 // ------------------------------------------------------------------ serve the app
