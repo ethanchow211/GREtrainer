@@ -59,3 +59,16 @@ body {
   .strategy-prose a { color: rgb(56 189 248); }
   .strategy-prose hr { border-top-color: rgb(51 65 85); }
 }
+
+/* A $$...$$ equation is set on its own centred line, the way a textbook would
+   set it. KaTeX already emits a block for display mode; this just gives it room
+   and lets a long equation scroll rather than widening the page. */
+.math-display {
+  display: block;
+  margin: 0.9em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.math-display .katex-display {
+  margin: 0;
+}

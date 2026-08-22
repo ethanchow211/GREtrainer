@@ -1,57 +1,18 @@
 import { useMemo } from 'react'
 import katex from 'katex'
+import { splitMath } from './math-split.ts'
 
 /**
- * Renders text that contains mathematics written between dollar signs.
+ * Renders text with mathematics embedded in it.
  *
- * Questions come back as prose with LaTeX embedded, like
- *   "If $x^2 = 16$ and $x < 0$, what is $\frac{x}{2}$?"
- * Plain text would make quant close to unreadable, so anything between single
- * dollar signs is handed to KaTeX and the rest is left alone.
+ * Questions arrive as prose with LaTeX between dollar signs, and standalone
+ * equations between double dollar signs. The splitting is in math-split.ts, which
+ * is pure and tested; this component only turns the pieces into HTML.
  */
 
 type Props = {
   children: string
   className?: string
-}
-
-type Segment = { math: boolean; text: string }
-
-function split(source: string): Segment[] {
-  const segments: Segment[] = []
-  let rest = source
-  // A dollar sign preceded by a backslash is a literal dollar (a price), not maths.
-  const pattern = /(?<!\\)\$([^$]+?)(?<!\\)\$/
-
-  for (;;) {
-    const match = pattern.exec(rest)
-    if (!match || match.index === undefined) break
-    if (match.index > 0) segments.push({ math: false, text: rest.slice(0, match.index) })
-    segments.push({ math: true, text: match[1] as string })
-    rest = rest.slice(match.index + match[0].length)
-  }
-  if (rest) segments.push({ math: false, text: rest })
-  return segments
-}
-
-export function MathText({ children, className }: Props) {
-  const html = useMemo(() => {
-    return split(children ?? '')
-      .map((seg) => {
-        if (!seg.math) {
-          return escapeHtml(seg.text).replace(/\\\$/g, '$').replace(/\n/g, '<br />')
-        }
-        try {
-          return katex.renderToString(seg.text, { throwOnError: false, displayMode: false })
-        } catch {
-          // A malformed expression should show as written rather than break the page.
-          return escapeHtml(`$${seg.text}$`)
-        }
-      })
-      .join('')
-  }, [children])
-
-  return <span className={className} dangerouslySetInnerHTML={{ __html: html }} />
 }
 
 function escapeHtml(s: string): string {
@@ -60,4 +21,29 @@ function escapeHtml(s: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
+}
+
+function renderTex(tex: string, displayMode: boolean): string {
+  try {
+    return katex.renderToString(tex, { throwOnError: false, displayMode })
+  } catch {
+    // A malformed expression should show as written rather than break the page.
+    return escapeHtml(displayMode ? `$$${tex}$$` : `$${tex}$`)
+  }
+}
+
+export function MathText({ children, className }: Props) {
+  const html = useMemo(() => {
+    return splitMath(children ?? '')
+      .map((seg) => {
+        if (seg.kind === 'text') return escapeHtml(seg.text).replace(/\n/g, '<br />')
+        if (seg.kind === 'inline') return renderTex(seg.tex, false)
+        // A display equation gets its own centred block, the way it would be set
+        // in a textbook -- that is why the generator reached for $$ in the first place.
+        return `<span class="math-display">${renderTex(seg.tex, true)}</span>`
+      })
+      .join('')
+  }, [children])
+
+  return <span className={className} dangerouslySetInnerHTML={{ __html: html }} />
 }
