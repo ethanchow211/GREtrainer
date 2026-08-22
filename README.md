@@ -110,6 +110,9 @@ gauge of how hard you are leaning on the subscription.
 | `src/server/mastery.ts` | The skill estimate and the review schedule. |
 | `src/server/select.ts` | Which question to ask next. |
 | `src/server/buffer.ts` | The background worker that keeps questions ready. |
+| `src/server/mock.ts` | Timed mock exams and the score estimate. |
+| `src/server/stats.ts` | The error breakdown — why questions get missed. |
+| `src/server/vocab.ts` | The vocabulary deck. |
 | `src/ui/` | The interface. |
 | `content/strategies/` | Hand-written strategy pages, surfaced when you miss a related question. |
 | `data/gre.db` | Your questions and progress. Not in git. |
@@ -141,6 +144,8 @@ at, so you never wait.
 | `npm run review` | Print stored questions so you can judge their quality yourself. |
 | `npm test` | Run the unit tests. |
 | `npm run typecheck` | Check the types without running anything. |
+| `npm run snapshot` | Dump the database to JSON in `data/snapshot/`, to commit. |
+| `npm run restore` | Rebuild the database from that JSON on another machine. |
 
 ## What it does while you drill
 
@@ -156,9 +161,47 @@ at, so you never wait.
   was tempting, picks the error tag, and points at the strategy page that addresses it.
 - **Tracks why, not just what.** "41% of your quant misses are arithmetic slips, not
   concept gaps" changes what you should practise. A topic breakdown does not.
+- **Builds a vocabulary deck by itself.** Miss a Text Completion or Sentence
+  Equivalence question and every word it offered enters a deck — wrong options
+  included, since those are usually what made it hard. Definitions are written a dozen
+  at a time, so the deck costs almost nothing to build.
+
+## Mock exams
+
+The **Mock exam** tab runs a full timed test built to the published GRE structure,
+minus the essay: verbal 12 questions in 18 minutes and 15 in 23, quant 12 in 21 and 15
+in 26. 88 minutes in total.
+
+Like the real test it is **section-adaptive** — how you do on the first section of each
+measure sets the difficulty of the second — and it gives no feedback until the end. The
+clock runs on the server, so reloading the page does not buy extra time.
+
+A full mock needs 54 verified questions. Until the pool is that big, sections come out
+short and the app says so.
+
+> [!warning]
+> The score estimate is an approximation, not an official concordance. It comes from
+> questions written in the style of the GRE, not the real thing.
 
 ## Your data
 
 Progress lives in `data/gre.db`, which is excluded from git — a binary database file
-produces merge conflicts nobody can resolve by hand. That means progress does not
-follow you to the laptop yet; a JSON export/import pair is planned for that.
+produces merge conflicts nobody can resolve by hand.
+
+To move between the desktop and the laptop:
+
+```
+npm run snapshot     # on the machine you have been using
+git add data/snapshot && git commit -m "study progress" && git push
+```
+
+then on the other machine:
+
+```
+git pull
+npm run restore
+```
+
+The snapshot is plain sorted JSON, so git merges it cleanly. **Restore merges rather
+than replaces** — a row already present wins, so restoring can never destroy work done
+on the machine you are restoring onto.

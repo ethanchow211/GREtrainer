@@ -1,1 +1,101 @@
-[]
+[
+ {
+  "word": "arbitrary",
+  "definition": "Based on random choice, whim, or personal preference rather than reason, rule, or system. (negative)\n\nCritics argued that the new zoning boundaries were arbitrary and lacked any clear rationale.",
+  "seen_in": "8a61063e-0000-4dae-9a84-ea63f3d66243",
+  "due_at": "2026-08-22T20:58:58.236Z",
+  "interval_days": 0,
+  "ease": 2.5,
+  "reps": 0,
+  "lapses": 0,
+  "created_at": "2026-08-22T20:58:58.236Z"
+ },
+ {
+  "word": "deliberate",
+  "definition": "Done consciously and intentionally, or carried out slowly and carefully rather than hastily. (neutral)\n\nThe author's deliberate pacing allows readers to absorb each argument fully.",
+  "seen_in": "8a61063e-0000-4dae-9a84-ea63f3d66243",
+  "due_at": "2026-08-22T20:58:58.236Z",
+  "interval_days": 0,
+  "ease": 2.5,
+  "reps": 0,
+  "lapses": 0,
+  "created_at": "2026-08-22T20:58:58.236Z"
+ },
+ {
+  "word": "disciplined",
+  "definition": "Showing controlled, methodical behavior achieved through training or self-restraint. (positive)\n\nHer disciplined approach to research allowed her to complete the project ahead of schedule.",
+  "seen_in": "8a61063e-0000-4dae-9a84-ea63f3d66243",
+  "due_at": "2026-08-22T20:58:58.236Z",
+  "interval_days": 0,
+  "ease": 2.5,
+  "reps": 0,
+  "lapses": 0,
+  "created_at": "2026-08-22T20:58:58.236Z"
+ },
+ {
+  "word": "dismissed",
+  "definition": "Rejected or refused to consider something as unworthy of serious attention. (negative)\n\nThe committee dismissed the proposal without reviewing its supporting data.",
+  "seen_in": "8a61063e-0000-4dae-9a84-ea63f3d66243",
+  "due_at": "2026-08-22T20:58:58.236Z",
+  "interval_days": 0,
+  "ease": 2.5,
+  "reps": 0,
+  "lapses": 0,
+  "created_at": "2026-08-22T20:58:58.236Z"
+ },
+ {
+  "word": "extolled",
+  "definition": "Praised enthusiastically and at length. (positive)\n\nCritics extolled the novel's intricate structure and moral depth.",
+  "seen_in": "8a61063e-0000-4dae-9a84-ea63f3d66243",
+  "due_at": "2026-08-23T21:00:54.456Z",
+  "interval_days": 1,
+  "ease": 2.6,
+  "reps": 1,
+  "lapses": 0,
+  "created_at": "2026-08-22T20:58:58.236Z"
+ },
+ {
+  "word": "gimmicky",
+  "definition": "Relying on a superficial trick or novelty rather than genuine substance or merit. (negative)\n\nSome reviewers found the film's twist ending gimmicky rather than meaningful.",
+  "seen_in": "8a61063e-0000-4dae-9a84-ea63f3d66243",
+  "due_at": "2026-08-23T21:00:54.528Z",
+  "interval_days": 1,
+  "ease": 2.3,
+  "reps": 0,
+  "lapses": 1,
+  "created_at": "2026-08-22T20:58:58.236Z"
+ },
+ {
+  "word": "incidental",
+  "definition": "Occurring as a minor accompaniment or by-product of something else, rather than as its central purpose. (neutral)\n\nThe researchers noted that the finding was incidental to the main objective of the study.",
+  "seen_in": "8a61063e-0000-4dae-9a84-ea63f3d66243",
+  "due_at": "2026-08-22T20:58:58.236Z",
+  "interval_days": 0,
+  "ease": 2.5,
+  "reps": 0,
+  "lapses": 0,
+  "created_at": "2026-08-22T20:58:58.236Z"
+ },
+ {
+  "word": "innovative",
+  "definition": "Featuring new ideas, methods, or approaches not previously tried. (positive)\n\nThe laboratory is known for its innovative techniques in gene editing.",
+  "seen_in": "8a61063e-0000-4dae-9a84-ea63f3d66243",
+  "due_at": "2026-08-22T20:58:58.236Z",
+  "interval_days": 0,
+  "ease": 2.5,
+  "reps": 0,
+  "lapses": 0,
+  "created_at": "2026-08-22T20:58:58.236Z"
+ },
+ {
+  "word": "overlooked",
+  "definition": "Failed to notice, consider, or take into account. (negative)\n\nEarly reviewers overlooked the flaws in the study's methodology.",
+  "seen_in": "8a61063e-0000-4dae-9a84-ea63f3d66243",
+  "due_at": "2026-08-22T20:58:58.236Z",
+  "interval_days": 0,
+  "ease": 2.5,
+  "reps": 0,
+  "lapses": 0,
+  "created_at": "2026-08-22T20:58:58.236Z"
+ }
+]

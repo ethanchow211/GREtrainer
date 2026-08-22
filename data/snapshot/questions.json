@@ -34,6 +34,23 @@
   "first_served_at": null
  },
  {
+  "id": "090b6d0f-d4fe-48c4-829f-aa418f6bb217",
+  "section": "quant",
+  "subtopic": "arith.sequences",
+  "format": "mc",
+  "difficulty": 3,
+  "payload": "{\"stem\":\"In a geometric sequence of positive numbers, the 3rd term is 20 and the 6th term is 160. What is the 8th term of the sequence?\",\"options\":[\"640\",\"320\",\"1280\",\"5120\",\"160\"],\"correctIndices\":[0],\"correctValue\":640,\"checkExpr\":\"20*(2^5)\",\"explanation\":\"Let the common ratio be $r$. Since $a_6 = a_3 \\\\cdot r^{3}$, we get $r^3 = 160/20 = 8$, so $r = 2$ (positive, since all terms are positive). The 8th term is two steps past the 6th term: $a_8 = a_6 \\\\cdot r^2 = 160 \\\\cdot 4 = 640$. (Equivalently, $a_1 = a_3/r^2 = 5$, and $a_8 = a_1 r^7 = 5 \\\\cdot 128 = 640$.)\\n\\nThe key insight is tracking exactly how many factors of $r$ separate the terms you know from the term you want -- here, 2 steps from $a_6$, or 5 steps from $a_3$.\\n\\nOption B (320) results from treating the 6th-to-8th gap as a single step, multiplying by $r$ only once instead of $r^2$. Option C (1280) comes from an off-by-one indexing slip: using $a_n = a_1 r^{n}$ instead of the correct $a_1 r^{n-1}$, so $a_8$ is computed as $5 \\\\cdot 2^8$ rather than $5 \\\\cdot 2^7$. Option D (5120) results from raising $r$ to the full target index 8 relative to $a_3$ instead of the actual gap of 5, i.e. computing $a_3 \\\\cdot r^8$ instead of $a_3 \\\\cdot r^5$. Option E (160) simply restates the given 6th term, the trap for anyone who loses track of which index was actually asked for.\",\"difficulty\":3}",
+  "answer": "0",
+  "explanation": "Let the common ratio be $r$. Since $a_6 = a_3 \\cdot r^{3}$, we get $r^3 = 160/20 = 8$, so $r = 2$ (positive, since all terms are positive). The 8th term is two steps past the 6th term: $a_8 = a_6 \\cdot r^2 = 160 \\cdot 4 = 640$. (Equivalently, $a_1 = a_3/r^2 = 5$, and $a_8 = a_1 r^7 = 5 \\cdot 128 = 640$.)\n\nThe key insight is tracking exactly how many factors of $r$ separate the terms you know from the term you want -- here, 2 steps from $a_6$, or 5 steps from $a_3$.\n\nOption B (320) results from treating the 6th-to-8th gap as a single step, multiplying by $r$ only once instead of $r^2$. Option C (1280) comes from an off-by-one indexing slip: using $a_n = a_1 r^{n}$ instead of the correct $a_1 r^{n-1}$, so $a_8$ is computed as $5 \\cdot 2^8$ rather than $5 \\cdot 2^7$. Option D (5120) results from raising $r$ to the full target index 8 relative to $a_3$ instead of the actual gap of 5, i.e. computing $a_3 \\cdot r^8$ instead of $a_3 \\cdot r^5$. Option E (160) simply restates the given 6th term, the trap for anyone who loses track of which index was actually asked for.",
+  "check_expr": "20*(2^5)",
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "Let the common ratio be r. a6/a3 = r^3 = 160/20 = 8, so r = 2. Then a8 = a3 * r^5 = 20 * 32 = 640, which matches option A uniquely. All terms are positive as required (r=2>0, a3=20>0), and no other option satisfies the geometric sequence relations.",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:50:23.297Z",
+  "first_served_at": null
+ },
+ {
   "id": "0e11f1e2-5515-4c52-9dfd-339ee21aa0ea",
   "section": "quant",
   "subtopic": "arith.integers",
@@ -85,6 +102,40 @@
   "first_served_at": null
  },
  {
+  "id": "10ed3362-70e1-48d6-b633-b10906974f3f",
+  "section": "verbal",
+  "subtopic": "rc.argument",
+  "format": "rc",
+  "difficulty": 2,
+  "payload": "{\"passage\":\"After a mid-sized software firm introduced an automated chatbot to answer routine customer inquiries, the number of tickets submitted to its human support team fell by nearly a third over the following quarter. Company executives cited this decline as evidence that customers preferred the chatbot to waiting for a human representative, and they proposed expanding it to other product lines. In their report, the executives noted only that ticket volume had risen steadily for the two years before the chatbot's launch, and that the chatbot itself had been used by roughly forty percent of customers who contacted the company during the quarter in question.\",\"stem\":\"Which of the following, if true, would most seriously weaken the executives' conclusion that the chatbot was responsible for the decline in support tickets?\",\"options\":[\"In the same quarter, the company discontinued a product feature that had generated the largest share of customer complaints over the previous two years.\",\"The chatbot was able to resolve only a limited set of frequently asked questions.\",\"Customers who used the chatbot generally rated it as easy to navigate.\",\"The company plans to make the chatbot available on its mobile application as well as its website.\",\"Ticket volume had never previously declined for two consecutive quarters.\"],\"correctIndices\":[0],\"explanation\":\"The executives infer that the chatbot caused the drop in tickets simply because the drop followed the chatbot's launch. That inference assumes no other change occurred at the same time that could explain fewer customers needing to contact support at all.\\n\\nOption A supplies exactly such a rival cause: if the company also removed the very feature that had been generating most complaints, the ticket decline could reflect fewer problems to report rather than customers rerouting to the chatbot, since even the sixty percent of customers who never used the chatbot would have had less reason to file tickets.\\n\\nOption B limits the chatbot's scope but does not show that it failed to cause the decline, since even a narrow set of resolved questions could account for a third of tickets. Option C, that users liked the chatbot, if anything supports rather than undermines the executives' explanation. Option D describes a future plan and has no bearing on what caused the past quarter's decline. Option E states a fact about ticket history that neither introduces an alternative cause nor otherwise disturbs the link between the chatbot and the drop.\",\"difficulty\":2}",
+  "answer": "0",
+  "explanation": "The executives infer that the chatbot caused the drop in tickets simply because the drop followed the chatbot's launch. That inference assumes no other change occurred at the same time that could explain fewer customers needing to contact support at all.\n\nOption A supplies exactly such a rival cause: if the company also removed the very feature that had been generating most complaints, the ticket decline could reflect fewer problems to report rather than customers rerouting to the chatbot, since even the sixty percent of customers who never used the chatbot would have had less reason to file tickets.\n\nOption B limits the chatbot's scope but does not show that it failed to cause the decline, since even a narrow set of resolved questions could account for a third of tickets. Option C, that users liked the chatbot, if anything supports rather than undermines the executives' explanation. Option D describes a future plan and has no bearing on what caused the past quarter's decline. Option E states a fact about ticket history that neither introduces an alternative cause nor otherwise disturbs the link between the chatbot and the drop.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "The executives infer that the chatbot caused the drop in tickets, based on the coincidence of the chatbot's launch and the decline in ticket volume. To weaken this causal claim, we need an alternative explanation for why ticket volume fell, or evidence that undercuts the inference that customers were satisfied with/preferred the chatbot.\n\nA. If the company discontinued the very product feature that generated the most complaints in the same quarter, this offers a strong alternative explanation for the decline in tickets—independent of the chatbot's introduction—directly undermining the executiv",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:58:21.895Z",
+  "first_served_at": null
+ },
+ {
+  "id": "17ecd1fd-ab0d-4dad-b51d-bbb703d3be32",
+  "section": "verbal",
+  "subtopic": "tc.three",
+  "format": "tc",
+  "difficulty": 2,
+  "payload": "{\"stem\":\"Conservators who champion minimal intervention insist that a restorer's hand should remain (i)______, lest centuries of accumulated grime and old retouching be (ii)______ scraped away in pursuit of a pristine original that never actually existed; their critics counter that such restraint merely (iii)______ the artist's original brushwork with the accidents of age, letting later overpainting masquerade as the master's own.\",\"blanks\":[{\"options\":[\"unobtrusive\",\"assertive\",\"exhaustive\"],\"correctIndex\":0},{\"options\":[\"indiscriminately\",\"judiciously\",\"sparingly\"],\"correctIndex\":0},{\"options\":[\"conflates\",\"distinguishes\",\"preserves\"],\"correctIndex\":0}],\"explanation\":\"The sentence sets up a debate between two camps, and each blank must match the logic of the side being described at that point.\\n\\nThe \\\"minimal intervention\\\" conservators want the restorer to do as little as possible, so the hand should stay (i) unobtrusive; \\\"assertive\\\" contradicts that goal, and \\\"exhaustive\\\" suggests exactly the thorough scraping they fear.\\n\\nThe \\\"lest\\\" clause signals a warning about what could go wrong if intervention is not restrained: old material would be removed (ii) indiscriminately, carelessly and without regard for what is lost. \\\"Judiciously\\\" and \\\"sparingly\\\" both describe careful, limited removal, which is precisely what the minimal-intervention camp wants, not what they fear.\\n\\nThe critics' rebuttal turns on the word \\\"masquerade\\\": if overpainting can pass for the master's own work, then restraint must be blurring the line between original brushwork and later accretion, which is what (iii) conflates means. \\\"Distinguishes\\\" and \\\"preserves\\\" both imply the two layers stay separate and identifiable, which would undercut the very complaint that overpainting can be mistaken for the original.\",\"difficulty\":2}",
+  "answer": "0,0,0",
+  "explanation": "The sentence sets up a debate between two camps, and each blank must match the logic of the side being described at that point.\n\nThe \"minimal intervention\" conservators want the restorer to do as little as possible, so the hand should stay (i) unobtrusive; \"assertive\" contradicts that goal, and \"exhaustive\" suggests exactly the thorough scraping they fear.\n\nThe \"lest\" clause signals a warning about what could go wrong if intervention is not restrained: old material would be removed (ii) indiscriminately, carelessly and without regard for what is lost. \"Judiciously\" and \"sparingly\" both describe careful, limited removal, which is precisely what the minimal-intervention camp wants, not what they fear.\n\nThe critics' rebuttal turns on the word \"masquerade\": if overpainting can pass for the master's own work, then restraint must be blurring the line between original brushwork and later accretion, which is what (iii) conflates means. \"Distinguishes\" and \"preserves\" both imply the two layers stay separate and identifiable, which would undercut the very complaint that overpainting can be mistaken for the original.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "Blank 1: The conservators champion \"minimal intervention,\" so the restorer's hand should remain unobtrusive (light-touch, minimal), not assertive or exhaustive (which would be the opposite of minimal). \"Unobtrusive\" is the only choice consistent with minimal intervention.\n\nBlank 2: The clause begins with \"lest,\" signaling a fear/danger being warned against—that grime and old retouching might be scraped away carelessly. \"Indiscriminately\" (without careful distinction, i.e., recklessly) captures this danger. \"Judiciously\" would describe careful, wise removal—the opposite of what conservators fea",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:57:36.726Z",
+  "first_served_at": null
+ },
+ {
   "id": "2545231d-3ff6-4ff0-8ed4-52aa118c8367",
   "section": "quant",
   "subtopic": "data.probability",
@@ -119,6 +170,40 @@
   "first_served_at": null
  },
  {
+  "id": "26e805a5-9a37-4afb-81f5-2ee4f97f2f44",
+  "section": "quant",
+  "subtopic": "alg.linear",
+  "format": "mc",
+  "difficulty": 3,
+  "payload": "{\"stem\":\"If $3x + 5y = 19$ and $5x + 3y = 13$, what is the value of $x + y$?\",\"options\":[\"4\",\"-3\",\"32\",\"16\",\"8\"],\"correctIndices\":[0],\"correctValue\":4,\"checkExpr\":\"(19+13)/8\",\"explanation\":\"Don't solve for $x$ and $y$ separately -- add the two equations directly: $(3x+5y)+(5x+3y) = 19+13$, so $8x+8y = 32$, giving $x+y = 4$ (A).\\\\n\\\\nThe traps come from the other natural combination and from arithmetic slips: subtracting the equations instead of adding gives $(5x+3y)-(3x+5y) = 13-19$, i.e. $2x-2y=-6$, so $x-y=-3$ -- that's a different quantity, not $x+y$, but it's easy to mistake for the answer (B). Stopping after adding but forgetting to divide by 8 leaves $8x+8y=32$ misread as the final answer (C). Dividing 32 by the wrong number -- 2 instead of 8 -- gives 16 (D), and dividing by 4 instead of 8 gives 8 (E). The key insight is recognizing that the coefficients of $x$ and $y$ in each equation are swapped, so a straight sum collapses both variables into the same multiple of $(x+y)$, avoiding the need to find $x$ and $y$ individually (which turn out to be $x=0.5$, $y=3.5$).\",\"difficulty\":3}",
+  "answer": "0",
+  "explanation": "Don't solve for $x$ and $y$ separately -- add the two equations directly: $(3x+5y)+(5x+3y) = 19+13$, so $8x+8y = 32$, giving $x+y = 4$ (A).\\n\\nThe traps come from the other natural combination and from arithmetic slips: subtracting the equations instead of adding gives $(5x+3y)-(3x+5y) = 13-19$, i.e. $2x-2y=-6$, so $x-y=-3$ -- that's a different quantity, not $x+y$, but it's easy to mistake for the answer (B). Stopping after adding but forgetting to divide by 8 leaves $8x+8y=32$ misread as the final answer (C). Dividing 32 by the wrong number -- 2 instead of 8 -- gives 16 (D), and dividing by 4 instead of 8 gives 8 (E). The key insight is recognizing that the coefficients of $x$ and $y$ in each equation are swapped, so a straight sum collapses both variables into the same multiple of $(x+y)$, avoiding the need to find $x$ and $y$ individually (which turn out to be $x=0.5$, $y=3.5$).",
+  "check_expr": "(19+13)/8",
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "Adding the two equations: (3x+5y) + (5x+3y) = 19+13 → 8x+8y = 32 → x+y = 4. This matches option A uniquely. The other options appear to be plausible distractors (e.g., 32 is 8(x+y) before dividing, 8 is a coefficient), but only A is correct. The question is unambiguous and solvable with the given information.</reasoning>\n</invoke>\n",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:50:53.295Z",
+  "first_served_at": null
+ },
+ {
+  "id": "280446d6-3bc6-46ef-b665-a5fd4eb52e4e",
+  "section": "verbal",
+  "subtopic": "tc.three",
+  "format": "tc",
+  "difficulty": 2,
+  "payload": "{\"stem\":\"The translator's rendering of the epic was (i)______ by purists, who insisted that her decision to (ii)______ its archaic idioms into contemporary slang sacrificed the poem's ceremonial gravity; general readers, however, found the resulting text far more (iii)______ than the stilted diction of earlier translations.\",\"blanks\":[{\"options\":[\"lauded\",\"assailed\",\"disregarded\"],\"correctIndex\":1},{\"options\":[\"transmute\",\"excise\",\"preserve\"],\"correctIndex\":0},{\"options\":[\"accessible\",\"arcane\",\"turgid\"],\"correctIndex\":0}],\"explanation\":\"The purists \\\"insisted\\\" on a complaint, so the first blank must name a hostile reaction rather than approval or indifference; only assailed fits, since lauded reverses the sentiment and disregarded would make the purists' insistence pointless.\\n\\nThe second blank describes converting archaic idioms into slang, which requires a verb of transformation: transmute. Excise means to cut out entirely, which does not match \\\"into contemporary slang,\\\" and preserve would mean nothing changed, contradicting the claim that gravity was sacrificed.\\n\\nThe semicolon plus \\\"however\\\" signals a contrast with the purists' complaint: ordinary readers liked the result. Since the comparison is with the \\\"stilted diction\\\" of older translations, the new version must be easier to read, so accessible is correct. Arcane means obscure and turgid means pompously overwrought, both of which describe the old stilted style rather than an improvement on it, making them tempting but backward choices.\",\"difficulty\":2}",
+  "answer": "1,0,0",
+  "explanation": "The purists \"insisted\" on a complaint, so the first blank must name a hostile reaction rather than approval or indifference; only assailed fits, since lauded reverses the sentiment and disregarded would make the purists' insistence pointless.\n\nThe second blank describes converting archaic idioms into slang, which requires a verb of transformation: transmute. Excise means to cut out entirely, which does not match \"into contemporary slang,\" and preserve would mean nothing changed, contradicting the claim that gravity was sacrificed.\n\nThe semicolon plus \"however\" signals a contrast with the purists' complaint: ordinary readers liked the result. Since the comparison is with the \"stilted diction\" of older translations, the new version must be easier to read, so accessible is correct. Arcane means obscure and turgid means pompously overwrought, both of which describe the old stilted style rather than an improvement on it, making them tempting but backward choices.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "Blank 1: The purists \"insisted\" the translation \"sacrificed\" the poem's gravity — this signals strong disapproval, matching \"assailed\" (attacked/criticized). \"Lauded\" would contradict their negative stance, and \"disregarded\" doesn't fit the assertive verb \"insisted.\"\n\nBlank 2: The idiom needs a verb that pairs naturally with \"into contemporary slang.\" \"Transmute...into\" is idiomatic (to change one thing into another). \"Excise into\" is not idiomatic — excise means to cut out/remove, and you excise something FROM, not INTO, something. \"Preserve into\" is nonsensical, since preserving means keepin",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:57:29.066Z",
+  "first_served_at": null
+ },
+ {
   "id": "285338ad-201d-446f-93ea-49dfb19e1390",
   "section": "quant",
   "subtopic": "arith.percents",
@@ -136,6 +221,23 @@
   "first_served_at": null
  },
  {
+  "id": "2c818c38-bb03-46ba-87a4-b2f228160480",
+  "section": "quant",
+  "subtopic": "alg.inequalities",
+  "format": "ms",
+  "difficulty": 3,
+  "payload": "{\"stem\":\"If $x$ is a real number satisfying $-3 \\\\le \\\\dfrac{2-x}{3} \\\\le 4$, which of the following could be the value of $x$? Indicate all such values.\",\"options\":[\"-11\",\"-10\",\"-5\",\"10\",\"11\",\"12\"],\"correctIndices\":[1,2,3,4],\"correctValue\":null,\"checkExpr\":null,\"explanation\":\"Multiply every part of $-3 \\\\le \\\\frac{2-x}{3} \\\\le 4$ by 3: $-9 \\\\le 2-x \\\\le 12$. Subtract 2 from all parts: $-11 \\\\le -x \\\\le 10$. Now multiply by $-1$: because you're multiplying by a negative number, the inequality signs must reverse, giving $11 \\\\ge x \\\\ge -10$, i.e. $-10 \\\\le x \\\\le 11$. So any value from $-10$ to $11$, inclusive, works: B ($-10$), C ($-5$), D ($10$), and E ($11$) all satisfy the original inequality. Option A ($-11$) is the trap: it's exactly the value you'd get if you forgot to flip the inequality signs on that last step, which would wrongly make $-11$ the lower bound instead of $-10$. Option F ($12$) simply lies past the upper bound $11$.\",\"difficulty\":3}",
+  "answer": "1,2,3,4",
+  "explanation": "Multiply every part of $-3 \\le \\frac{2-x}{3} \\le 4$ by 3: $-9 \\le 2-x \\le 12$. Subtract 2 from all parts: $-11 \\le -x \\le 10$. Now multiply by $-1$: because you're multiplying by a negative number, the inequality signs must reverse, giving $11 \\ge x \\ge -10$, i.e. $-10 \\le x \\le 11$. So any value from $-10$ to $11$, inclusive, works: B ($-10$), C ($-5$), D ($10$), and E ($11$) all satisfy the original inequality. Option A ($-11$) is the trap: it's exactly the value you'd get if you forgot to flip the inequality signs on that last step, which would wrongly make $-11$ the lower bound instead of $-10$. Option F ($12$) simply lies past the upper bound $11$.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "Solve -3 ≤ (2-x)/3 ≤ 4.\nMultiply all parts by 3: -9 ≤ 2-x ≤ 12.\nSubtract 2: -11 ≤ -x ≤ 10.\nMultiply by -1 (flip inequalities): 11 ≥ x ≥ -10, i.e., -10 ≤ x ≤ 11.\n\nCheck each option:\nA. -11 → outside range (less than -10) → invalid\nB. -10 → equals lower bound → valid ((2-(-10))/3 = 12/3 = 4, satisfies ≤4)\nC. -5 → within range → valid\nD. 10 → within range → valid\nE. 11 → equals upper bound → valid ((2-11)/3 = -9/3 = -3, satisfies ≥ -3)\nF. 12 → outside range (greater than 11) → invalid\n\nThus the correct choices are B, C, D, E. The problem is a straightforward compound inequality with a clear, unam",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:52:34.251Z",
+  "first_served_at": null
+ },
+ {
   "id": "2dbac69a-4557-49fa-98ed-d355feda69c8",
   "section": "quant",
   "subtopic": "arith.fractions",
@@ -150,6 +252,108 @@
   "verifier_note": "Quantity A: (7/8) ÷ (3/5) = (7/8)(5/3) = 35/24 = 1.41666... wait recompute: 35/24 = 1.458333...\n\nSo Quantity A = 35/24 ≈ 1.4583. Quantity B = 1.45. Since 1.4583 > 1.45, Quantity A is greater. The question is unambiguous, involves a clean single computation with a definite numeric comparison, and only one answer choice (A) is correct.</reasoning>\n",
   "model": "sonnet",
   "created_at": "2026-08-22T20:41:51.384Z",
+  "first_served_at": null
+ },
+ {
+  "id": "3425e4da-106e-47be-a0a6-cba73fbf6339",
+  "section": "quant",
+  "subtopic": "alg.linear",
+  "format": "ne",
+  "difficulty": 3,
+  "payload": "{\"stem\":\"The sum of two numbers is $34$. Three times the first number minus twice the second number equals $12$. What is the value of the larger of the two numbers?\",\"correctValue\":18,\"answerIsFraction\":false,\"checkExpr\":\"(34*3-12)/5\",\"explanation\":\"Let the numbers be $x$ (first) and $y$ (second): $x+y=34$ and $3x-2y=12$. Rather than solving for $x$ first and then substituting, eliminate $x$ directly: multiply the first equation by 3 to get $3x+3y=102$, then subtract the second equation $3x-2y=12$ from it: $(3x+3y)-(3x-2y)=102-12$, so $5y=90$ and $y=18$. Then $x=34-18=16$, so the larger number is $18$.\\n\\nThe main trap is stopping after finding $x=16$ and reporting that value -- it satisfies both equations but is the *smaller* number, not the one asked for. A second trap is mishandling the sign in the second equation (treating it as $3x+2y=12$), which changes the elimination result and gives an answer like $30$ for $y$. Setting up the elimination to solve for $y$ directly (rather than solving for $x$ and subtracting from 34) avoids an extra step where a sign slip is likely.\",\"difficulty\":3}",
+  "answer": "18",
+  "explanation": "Let the numbers be $x$ (first) and $y$ (second): $x+y=34$ and $3x-2y=12$. Rather than solving for $x$ first and then substituting, eliminate $x$ directly: multiply the first equation by 3 to get $3x+3y=102$, then subtract the second equation $3x-2y=12$ from it: $(3x+3y)-(3x-2y)=102-12$, so $5y=90$ and $y=18$. Then $x=34-18=16$, so the larger number is $18$.\n\nThe main trap is stopping after finding $x=16$ and reporting that value -- it satisfies both equations but is the *smaller* number, not the one asked for. A second trap is mishandling the sign in the second equation (treating it as $3x+2y=12$), which changes the elimination result and gives an answer like $30$ for $y$. Setting up the elimination to solve for $y$ directly (rather than solving for $x$ and subtracting from 34) avoids an extra step where a sign slip is likely.",
+  "check_expr": "(34*3-12)/5",
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "Let the two numbers be x and y with x+y=34 and 3x-2y=12. Substituting x=34-y gives 3(34-y)-2y=12 → 102-5y=12 → y=18, so x=16. The larger number is 18. The system has a unique solution, so the question is well-posed and unambiguous.",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:50:52.728Z",
+  "first_served_at": null
+ },
+ {
+  "id": "3b9cfe6f-8e7b-4975-9768-f0bb2bc689c5",
+  "section": "verbal",
+  "subtopic": "rc.argument",
+  "format": "rc",
+  "difficulty": 2,
+  "payload": "{\"passage\":\"A hospital administrator points to a striking figure: in the six months following the installation of an automated hand-hygiene monitoring system, which tracks whether staff sanitize before entering patient rooms, hospital-acquired infections fell by thirty percent compared with the preceding six months. The administrator concludes that the monitoring system itself was responsible for the improvement, and recommends that the hospital expand the program to every ward. Hospital board members have approved additional funding on this basis, reasoning that a device capable of producing such a rapid decline in infection rates deserves wider deployment. No controlled comparison ward was maintained during the trial period, and the administrator's report does not mention whether any other infection-control measures were introduced or altered during those same six months.\",\"stem\":\"The administrator's argument depends on which of the following assumptions?\",\"options\":[\"The monitoring system was less costly to install than earlier hand-hygiene training programs.\",\"No other change in hospital protocol during the same six-month period contributed to the decline in infections.\",\"The monitoring system recorded staff compliance rates with complete accuracy.\",\"Infection rates at the hospital were higher than those at comparable hospitals before the system was installed.\",\"The monitoring system will continue to reduce infection rates in future years as it is expanded to other wards.\"],\"correctIndices\":[1],\"explanation\":\"The administrator's evidence is a before-and-after comparison: infections fell after the system was installed, therefore the system caused the fall. That inference only holds if nothing else capable of lowering infection rates changed during the same window. The passage itself flags this gap by noting that no control ward was used and that other possible interventions during the period go unmentioned. Option B states the needed assumption directly, and applying the negation test confirms it: if some other protocol change had in fact driven the decline, the administrator's causal claim would collapse even though the thirty-percent drop is real.\\n\\nOption A concerns cost, which has no bearing on whether the system caused the infection decline. Option C is a tempting distractor because it sounds related to the monitoring system's function, but the argument's evidence is the infection rate itself, not the accuracy of compliance readings, so this is not a premise the causal claim needs. Option D introduces a comparison to other hospitals that the argument never relies on. Option E predicts future performance, but the conclusion only concerns explaining the past decline, not forecasting continued results.\",\"difficulty\":2}",
+  "answer": "1",
+  "explanation": "The administrator's evidence is a before-and-after comparison: infections fell after the system was installed, therefore the system caused the fall. That inference only holds if nothing else capable of lowering infection rates changed during the same window. The passage itself flags this gap by noting that no control ward was used and that other possible interventions during the period go unmentioned. Option B states the needed assumption directly, and applying the negation test confirms it: if some other protocol change had in fact driven the decline, the administrator's causal claim would collapse even though the thirty-percent drop is real.\n\nOption A concerns cost, which has no bearing on whether the system caused the infection decline. Option C is a tempting distractor because it sounds related to the monitoring system's function, but the argument's evidence is the infection rate itself, not the accuracy of compliance readings, so this is not a premise the causal claim needs. Option D introduces a comparison to other hospitals that the argument never relies on. Option E predicts future performance, but the conclusion only concerns explaining the past decline, not forecasting continued results.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "This is a classic causal-reasoning assumption question. The administrator observes a correlation (infections fell after the monitoring system was installed) and concludes causation (the system caused the decline). The passage explicitly flags the flaw: no control ward, and no mention of whether other infection-control measures changed during the same period. The argument requires ruling out confounding causes—if some other protocol change actually caused the drop, the conclusion collapses. Applying the negation test to each option:\n\n- B, negated: \"some other change in protocol did contribute t",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:58:09.896Z",
+  "first_served_at": null
+ },
+ {
+  "id": "40035a73-789c-488f-a349-85937aec21fd",
+  "section": "quant",
+  "subtopic": "alg.inequalities",
+  "format": "ms",
+  "difficulty": 3,
+  "payload": "{\"stem\":\"If $x$ is a nonzero real number satisfying $\\\\dfrac{3}{x} > 5$, which of the following could be the value of $x$? Indicate all such values.\",\"options\":[\"-2\",\"-\\\\frac{1}{2}\",\"\\\\frac{1}{10}\",\"\\\\frac{1}{2}\",\"\\\\frac{3}{5}\",\"\\\\frac{5}{3}\"],\"correctIndices\":[2,3],\"correctValue\":null,\"checkExpr\":null,\"explanation\":\"Because the sign of $x$ determines whether multiplying the inequality by $x$ flips it, you must split into cases rather than cross-multiply blindly.\\n\\nCase $x>0$: multiplying $\\\\frac{3}{x}>5$ by $x$ keeps the direction, giving $3>5x$, so $x<\\\\frac{3}{5}$. Combined with $x>0$, this gives $0<x<\\\\frac{3}{5}$.\\n\\nCase $x<0$: multiplying by $x$ reverses the direction, giving $3<5x$, so $x>\\\\frac{3}{5}$. That contradicts $x<0$, so this case contributes no solutions -- in particular, every negative number fails the original inequality, since $\\\\frac{3}{x}$ is negative whenever $x$ is negative and can never exceed $5$.\\n\\nSo the full solution set is $0<x<\\\\frac{3}{5}$. Among the options, C ($\\\\frac{1}{10}$) and D ($\\\\frac{1}{2}$) fall in this open interval and work. A and B are negative and are the trap for anyone who cross-multiplies without checking the sign of $x$, mistakenly concluding that all $x<\\\\frac{3}{5}$ satisfy the inequality. E is the boundary value $\\\\frac{3}{5}$ itself, which makes $\\\\frac{3}{x}$ equal to $5$, not greater than $5$, so it is excluded by the strict inequality. F is too large and lies outside the interval entirely.\",\"difficulty\":3}",
+  "answer": "2,3",
+  "explanation": "Because the sign of $x$ determines whether multiplying the inequality by $x$ flips it, you must split into cases rather than cross-multiply blindly.\n\nCase $x>0$: multiplying $\\frac{3}{x}>5$ by $x$ keeps the direction, giving $3>5x$, so $x<\\frac{3}{5}$. Combined with $x>0$, this gives $0<x<\\frac{3}{5}$.\n\nCase $x<0$: multiplying by $x$ reverses the direction, giving $3<5x$, so $x>\\frac{3}{5}$. That contradicts $x<0$, so this case contributes no solutions -- in particular, every negative number fails the original inequality, since $\\frac{3}{x}$ is negative whenever $x$ is negative and can never exceed $5$.\n\nSo the full solution set is $0<x<\\frac{3}{5}$. Among the options, C ($\\frac{1}{10}$) and D ($\\frac{1}{2}$) fall in this open interval and work. A and B are negative and are the trap for anyone who cross-multiplies without checking the sign of $x$, mistakenly concluding that all $x<\\frac{3}{5}$ satisfy the inequality. E is the boundary value $\\frac{3}{5}$ itself, which makes $\\frac{3}{x}$ equal to $5$, not greater than $5$, so it is excluded by the strict inequality. F is too large and lies outside the interval entirely.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "Solve 3/x > 5 for real nonzero x.\n\nCase x > 0: multiplying both sides by x (positive, inequality direction preserved): 3 > 5x → x < 3/5. Combined with x > 0, this gives 0 < x < 3/5.\n\nCase x < 0: multiplying both sides by x (negative, inequality flips): 3 < 5x → x > 3/5. But this contradicts x < 0, so no solutions in this case.\n\nThus the solution set is 0 < x < 3/5.\n\nCheck each option:\nA. -2: negative, fails (not in 0<x<3/5).\nB. -1/2: negative, fails.\nC. 1/10 = 0.1: satisfies 0 < 0.1 < 0.6. Works.\nD. 1/2 = 0.5: satisfies 0 < 0.5 < 0.6. Works.\nE. 3/5 = 0.6: equals the boundary, not strictly less",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:54:41.697Z",
+  "first_served_at": null
+ },
+ {
+  "id": "4553bb89-59b8-4fa8-babf-aec9d20eb70a",
+  "section": "verbal",
+  "subtopic": "rc.mainidea",
+  "format": "rc",
+  "difficulty": 2,
+  "payload": "{\"passage\":\"In 2005, paleontologists reported soft, pliable tissue recovered from the leg bone of a 68-million-year-old Tyrannosaurus rex, including structures resembling blood vessels and cells. The finding contradicted a long-held assumption that organic material could not survive more than a few million years, and it was met with swift skepticism: critics argued that the tissue was more likely a bacterial biofilm that had colonized the bone long after fossilization, mimicking biological structures through coincidence rather than preservation. Subsequent studies, however, used mass spectrometry to identify collagen peptide sequences within the material, and comparative analysis showed those sequences aligning most closely with modern birds, the dinosaurs' living relatives. While a few researchers still caution that contamination from handling or burial cannot be entirely ruled out, most paleontologists now accept that some original organic molecules can, under rare geochemical conditions, persist far longer than previously believed, a conclusion that has prompted a broader reassessment of what fossils can reveal about ancient physiology.\",\"stem\":\"Which of the following best describes the primary purpose of the passage?\",\"options\":[\"To argue that bacterial contamination fully explains the apparent soft tissue found in dinosaur fossils\",\"To trace how an unexpected fossil discovery prompted skepticism that further evidence largely overcame, leading to a revised understanding of organic preservation\",\"To describe the technique of mass spectrometry and its uses in identifying ancient proteins\",\"To show that Tyrannosaurus rex is more closely related to modern birds than previously believed\",\"To argue that all paleontological claims about soft tissue preservation should be treated with permanent suspicion\"],\"correctIndices\":[1],\"explanation\":\"The passage moves through a full arc: an unexpected discovery, the skeptical response it provoked, the evidence (peptide sequencing) that addressed that skepticism, and the resulting shift in scientific consensus about organic preservation. Option B captures that entire arc, which is what the passage as a whole is doing.\\n\\nOption A takes the skeptics' position and treats it as the passage's conclusion, but the passage reports that this view was largely overturned by later evidence, not confirmed.\\n\\nOption C fixes on a single supporting detail, the mass spectrometry technique, and mistakes a piece of the evidence for the passage's overall purpose.\\n\\nOption D also isolates one detail, the collagen's similarity to bird sequences, which serves the passage's larger point about preservation rather than standing as the main idea itself.\\n\\nOption E overstates the passage's tone: it notes that a few researchers remain cautious, but the passage explicitly says most paleontologists now accept the finding, so \\\"permanent suspicion\\\" contradicts the passage's own resolution.\",\"difficulty\":2}",
+  "answer": "1",
+  "explanation": "The passage moves through a full arc: an unexpected discovery, the skeptical response it provoked, the evidence (peptide sequencing) that addressed that skepticism, and the resulting shift in scientific consensus about organic preservation. Option B captures that entire arc, which is what the passage as a whole is doing.\n\nOption A takes the skeptics' position and treats it as the passage's conclusion, but the passage reports that this view was largely overturned by later evidence, not confirmed.\n\nOption C fixes on a single supporting detail, the mass spectrometry technique, and mistakes a piece of the evidence for the passage's overall purpose.\n\nOption D also isolates one detail, the collagen's similarity to bird sequences, which serves the passage's larger point about preservation rather than standing as the main idea itself.\n\nOption E overstates the passage's tone: it notes that a few researchers remain cautious, but the passage explicitly says most paleontologists now accept the finding, so \"permanent suspicion\" contradicts the passage's own resolution.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "The passage narrates: (1) an unexpected discovery (soft tissue in a T. rex bone), (2) the skepticism it provoked (biofilm hypothesis), (3) subsequent evidence (mass spectrometry, collagen sequences matching birds) that largely, though not entirely, overcame that skepticism, and (4) the resulting shift in scientific consensus about how long organic material can persist. This matches option B precisely.\n\nThe other options fail: A misstates the passage's conclusion (contamination is not accepted as the full explanation—most paleontologists now accept genuine preservation). C focuses on a supporti",
+  "model": "sonnet",
+  "created_at": "2026-08-22T21:00:00.043Z",
+  "first_served_at": null
+ },
+ {
+  "id": "45916e2d-ca2f-41d2-97f4-e113d7c3e24e",
+  "section": "verbal",
+  "subtopic": "rc.argument",
+  "format": "rc",
+  "difficulty": 2,
+  "payload": "{\"passage\":\"A software company switched last year from a five-day to a four-day workweek, with no change in daily hours. Over the following twelve months, the total number of sick days taken by employees fell by 20 percent compared with the prior year. Company executives concluded that the shorter workweek had made employees healthier, and they urged other firms to adopt the same schedule as a way to reduce employee illness.\",\"stem\":\"Which of the following, if true, would most seriously weaken the executives' conclusion?\",\"options\":[\"Employees at the company reported higher job satisfaction after the switch to a four-day workweek.\",\"Because the workweek now has four scheduled workdays instead of five, employees have 20 percent fewer days on which they could take a sick day.\",\"Employees who take a sick day are required to submit a note from a physician.\",\"The company's health insurance premiums remained unchanged throughout the year of the switch.\"],\"correctIndices\":[1],\"explanation\":\"The executives treat a 20 percent drop in the raw count of sick days as proof that employees became healthier. But that count depends on two things: how sick employees are, and how many scheduled workdays they have on which illness could even be reported as a sick day. Option B shows that the number of scheduled workdays itself fell by exactly 20 percent, which means the drop in sick days could be entirely mechanical, with no actual improvement in employee health, since there were simply fewer opportunities to take a sick day in the first place. That fully accounts for the executives' evidence without any health effect at all, which is what makes it the strongest available weakener.\\n\\nOption A is a classic true-but-irrelevant trap: it speaks to job satisfaction, a different outcome from physical health, and does nothing to address whether the sick-day decline reflects healthier employees. Options C and D describe administrative details, a documentation requirement and a stable insurance cost, that have no bearing on why the sick-day count fell and so leave the causal claim untouched.\",\"difficulty\":2}",
+  "answer": "1",
+  "explanation": "The executives treat a 20 percent drop in the raw count of sick days as proof that employees became healthier. But that count depends on two things: how sick employees are, and how many scheduled workdays they have on which illness could even be reported as a sick day. Option B shows that the number of scheduled workdays itself fell by exactly 20 percent, which means the drop in sick days could be entirely mechanical, with no actual improvement in employee health, since there were simply fewer opportunities to take a sick day in the first place. That fully accounts for the executives' evidence without any health effect at all, which is what makes it the strongest available weakener.\n\nOption A is a classic true-but-irrelevant trap: it speaks to job satisfaction, a different outcome from physical health, and does nothing to address whether the sick-day decline reflects healthier employees. Options C and D describe administrative details, a documentation requirement and a stable insurance cost, that have no bearing on why the sick-day count fell and so leave the causal claim untouched.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "The executives infer that the four-day workweek caused better health because sick days fell 20%. But the number of possible workdays on which a sick day could be taken also fell by 20% (5→4 days per week), so a 20% drop in sick-day count is exactly what you'd expect even with no change in underlying health/illness rate—employees are just as likely (per scheduled workday) to be sick, but there are 20% fewer days to report it. This directly undercuts the causal claim by supplying an alternative, purely mechanical explanation for the observed statistic, making B the clear answer.\n\nChecking the ot",
+  "model": "sonnet",
+  "created_at": "2026-08-22T21:00:16.808Z",
+  "first_served_at": null
+ },
+ {
+  "id": "485b22b2-9b3a-41c4-af58-a596a6831a4f",
+  "section": "verbal",
+  "subtopic": "tc.three",
+  "format": "tc",
+  "difficulty": 2,
+  "payload": "{\"stem\":\"Economists who favor countercyclical spending argue that austerity during a recession is (i)______, since slashing government expenditure precisely when private demand is collapsing only (ii)______ the downturn; critics counter that unchecked deficits merely (iii)______ the crisis to a later, more painful reckoning.\",\"blanks\":[{\"options\":[\"prudent\",\"counterproductive\",\"redundant\"],\"correctIndex\":1},{\"options\":[\"alleviates\",\"deepens\",\"forestalls\"],\"correctIndex\":1},{\"options\":[\"resolve\",\"defer\",\"avert\"],\"correctIndex\":1}],\"explanation\":\"The first clause tells you how the countercyclical economists view austerity, and the causal 'since' clause spells out why: cutting spending exactly when private demand is already falling makes the recession worse, not better, so blank (i) must be a negative judgment. 'Counterproductive' captures that; 'prudent' asserts the opposite view, and 'redundant' does not follow from the stated cause at all.\\n\\nBlank (ii) is fixed by the same causal logic: less government spending on top of collapsing private demand only makes the downturn worse, so 'deepens' is required. 'Alleviates' reverses the causation, and 'forestalls' (prevents or delays) makes no sense paired with 'only,' which signals a worsening effect, not a protective one.\\n\\nThe semicolon introduces the critics' rebuttal, and the phrase 'to a later, more painful reckoning' is the definite clue for blank (iii): deficits do not eliminate the crisis, they push it into the future. 'Defer' matches exactly. 'Resolve' would mean the crisis is settled, which contradicts the idea of a still-pending later reckoning, and 'avert' would mean the crisis never arrives at all, which the phrase explicitly rules out.\",\"difficulty\":2}",
+  "answer": "1,1,1",
+  "explanation": "The first clause tells you how the countercyclical economists view austerity, and the causal 'since' clause spells out why: cutting spending exactly when private demand is already falling makes the recession worse, not better, so blank (i) must be a negative judgment. 'Counterproductive' captures that; 'prudent' asserts the opposite view, and 'redundant' does not follow from the stated cause at all.\n\nBlank (ii) is fixed by the same causal logic: less government spending on top of collapsing private demand only makes the downturn worse, so 'deepens' is required. 'Alleviates' reverses the causation, and 'forestalls' (prevents or delays) makes no sense paired with 'only,' which signals a worsening effect, not a protective one.\n\nThe semicolon introduces the critics' rebuttal, and the phrase 'to a later, more painful reckoning' is the definite clue for blank (iii): deficits do not eliminate the crisis, they push it into the future. 'Defer' matches exactly. 'Resolve' would mean the crisis is settled, which contradicts the idea of a still-pending later reckoning, and 'avert' would mean the crisis never arrives at all, which the phrase explicitly rules out.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "Blank 1: The clause \"since slashing government expenditure ... only ___s the downturn\" signals a negative consequence, matching \"counterproductive.\" \"Prudent\" would contradict this, and \"redundant\" (meaning superfluous) doesn't fit the causal \"since\" logic.\n\nBlank 2: The verb must complete \"only ___s the downturn\" as a negative outcome consistent with counterproductive austerity — \"deepens\" fits perfectly. \"Alleviates\" is the opposite meaning, and \"forestalls\" (prevents) doesn't make sense with \"only,\" which implies the recession gets worse, not delayed or stopped.\n\nBlank 3: The phrase \"to a l",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:56:56.458Z",
   "first_served_at": null
  },
  {
@@ -201,6 +405,23 @@
   "verifier_note": "Numerator: 0.375 + 1/8 = 0.375 + 0.125 = 0.5. Denominator: 1 - 0.625 = 0.375. Result: 0.5/0.375 = 4/3. The question is a straightforward, unambiguous arithmetic computation with a single correct value.",
   "model": "sonnet",
   "created_at": "2026-08-22T20:42:16.349Z",
+  "first_served_at": null
+ },
+ {
+  "id": "50a35534-7185-42fc-87b8-00e9dcf045a5",
+  "section": "verbal",
+  "subtopic": "tc.three",
+  "format": "tc",
+  "difficulty": 2,
+  "payload": "{\"stem\":\"Because the naturalist's field notes on octopus problem-solving were largely (i)________ rather than systematically replicated, early reviewers dismissed them as journalistic curiosities; only after laboratory researchers (ii)________ her central claim under controlled conditions did the same critics feel compelled to (iii)________ their initial verdict.\",\"blanks\":[{\"options\":[\"anecdotal\",\"quantitative\",\"definitive\",\"peer-reviewed\",\"exhaustive\"],\"correctIndex\":0},{\"options\":[\"contradicted\",\"corroborated\",\"questioned\",\"overlooked\",\"duplicated\"],\"correctIndex\":1},{\"options\":[\"reiterate\",\"publicize\",\"retract\",\"circulate\",\"defend\"],\"correctIndex\":2}],\"explanation\":\"The word \\\"rather than\\\" signals a contrast between the naturalist's notes and the kind of systematic replication that would have earned them respect, so blank (i) must name a weaker, less rigorous form of evidence: \\\"anecdotal\\\" fits, while \\\"quantitative,\\\" \\\"definitive,\\\" \\\"peer-reviewed,\\\" and \\\"exhaustive\\\" all describe exactly the rigor the sentence says was absent.\\n\\nThe second clause explains why critics changed their minds: laboratory work under controlled conditions did something to the claim that made a reversal necessary. Only \\\"corroborated\\\" supplies a reason for critics to abandon their skepticism; \\\"contradicted\\\" and \\\"questioned\\\" would instead confirm the critics' original dismissal, and \\\"overlooked\\\" and \\\"duplicated\\\" do not logically compel any change of verdict.\\n\\nSince the claim was confirmed, the critics' earlier dismissal becomes untenable, so they must withdraw it -- \\\"retract\\\" is the only verb consistent with reversing a verdict. \\\"Reiterate\\\" and \\\"defend\\\" describe critics doubling down on their original position, which contradicts the sentence's premise that corroborating evidence forced a change, and \\\"publicize\\\" fits the grammar but supplies no logical response to being proven wrong.\",\"difficulty\":2}",
+  "answer": "0,1,2",
+  "explanation": "The word \"rather than\" signals a contrast between the naturalist's notes and the kind of systematic replication that would have earned them respect, so blank (i) must name a weaker, less rigorous form of evidence: \"anecdotal\" fits, while \"quantitative,\" \"definitive,\" \"peer-reviewed,\" and \"exhaustive\" all describe exactly the rigor the sentence says was absent.\n\nThe second clause explains why critics changed their minds: laboratory work under controlled conditions did something to the claim that made a reversal necessary. Only \"corroborated\" supplies a reason for critics to abandon their skepticism; \"contradicted\" and \"questioned\" would instead confirm the critics' original dismissal, and \"overlooked\" and \"duplicated\" do not logically compel any change of verdict.\n\nSince the claim was confirmed, the critics' earlier dismissal becomes untenable, so they must withdraw it -- \"retract\" is the only verb consistent with reversing a verdict. \"Reiterate\" and \"defend\" describe critics doubling down on their original position, which contradicts the sentence's premise that corroborating evidence forced a change, and \"publicize\" fits the grammar but supplies no logical response to being proven wrong.",
+  "check_expr": null,
+  "status": "rejected",
+  "reject_reason": "structure: blank 1 needs 3 options, got 5; blank 2 needs 3 options, got 5; blank 3 needs 3 options, got 5",
+  "verifier_note": null,
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:55:29.672Z",
   "first_served_at": null
  },
  {
@@ -303,7 +524,7 @@
   "verifier_note": "The sentence structure sets up a contrast: critics praised the biography for what appeared to be a certain kind of treatment of the subject's misdeeds, but \"failed to notice\" that this treatment actually functioned differently — the second clause explains that \"withholding condemnation... can itself function as vindication,\" which directly defines the hidden effect as exoneration (Blank 2 = A). For the critics' failure to be meaningful, the treatment must have seemed neutral/non-judgmental (i.e., \"dispassionate,\" Blank 1 = A) rather than already appearing apologetic (which would make the \"vind",
   "model": "sonnet",
   "created_at": "2026-08-22T20:21:52.273Z",
-  "first_served_at": null
+  "first_served_at": "2026-08-22T20:53:53.898Z"
  },
  {
   "id": "60ba018d-95a2-44ae-ac1f-ef3eb09db495",
@@ -388,7 +609,7 @@
   "verifier_note": "The sentence describes prose that is \"unadorned,\" consisting of plain declarative sentences with no hedging or rhetorical flourish. This calls for a word meaning \"plain/unembellished,\" which is satisfied by both \"austere\" and \"spare\" — genuine synonyms in this sense (spare/austere prose = stripped of ornamentation). \n\nChecking the distractors: \"florid\" and \"ornate\" mean the opposite (excessively decorated), so they contradict the sentence and are correctly excluded — though they form a synonymous pair with each other, they don't fit the blank, so they function as a deliberate contrastive trap ",
   "model": "sonnet",
   "created_at": "2026-08-22T20:24:00.608Z",
-  "first_served_at": null
+  "first_served_at": "2026-08-22T20:53:54.014Z"
  },
  {
   "id": "6febafe2-13ff-4a15-a285-40dd9c1282ba",
@@ -406,6 +627,23 @@
   "model": "sonnet",
   "created_at": "2026-08-22T20:14:53.320Z",
   "first_served_at": "2026-08-22T20:37:31.093Z"
+ },
+ {
+  "id": "7c08663f-5589-4bf1-9cd7-f2fb7341857d",
+  "section": "verbal",
+  "subtopic": "rc.argument",
+  "format": "rc",
+  "difficulty": 2,
+  "payload": "{\"passage\":\"A textbook publisher plans to discontinue the print edition of its introductory economics textbook and sell only a digital edition, priced lower than the print version had been. This plan follows a survey in which 68 percent of students said they would choose a lower-priced digital edition over a higher-priced print edition if both were available. Digital editions cost the publisher less to produce and distribute than print editions do. The publisher concludes that eliminating the print edition will increase its overall profits.\",\"stem\":\"The publisher's argument depends on which of the following assumptions?\",\"options\":[\"Most students who said they preferred the digital edition will purchase it directly from the publisher rather than obtaining the material through other means, such as used print copies or unauthorized digital copies.\",\"All students who preferred the print edition will stop taking economics courses once the print edition is discontinued.\",\"The publisher's production costs for digital editions will continue to decline as digital technology improves.\",\"The survey sample of students accurately reflects the reading preferences of students in other academic disciplines.\"],\"correctIndices\":[0],\"explanation\":\"The survey measures a stated preference under a hypothetical condition -- students said they would choose digital if it were cheaper -- but the conclusion is about actual profit, which depends on students actually buying the digital edition from the publisher. If a large share of those students instead got the text through used copies, file-sharing, or classmates, the publisher's sales volume could fall even though its stated preference numbers looked favorable. The argument therefore requires that most of those students will in fact purchase the digital edition through the publisher, which is option A. Applying the negation test confirms this: if that assumption is false, the predicted profit increase collapses.\\n\\nOption B overstates what the argument needs; the publisher's conclusion doesn't require that every print-preferring student quit the course, only that enough students still buy the digital edition, so this exaggerated claim isn't a necessary premise. Option C brings in a consideration -- future cost trends -- that the argument never relies on, since the comparison only concerns current production costs. Option D shifts the discussion to other academic disciplines entirely, which is outside the scope of a conclusion about one economics textbook's profits. Only A closes the actual gap between stated preference and realized purchasing behavior that the argument leaves open.\",\"difficulty\":2}",
+  "answer": "0",
+  "explanation": "The survey measures a stated preference under a hypothetical condition -- students said they would choose digital if it were cheaper -- but the conclusion is about actual profit, which depends on students actually buying the digital edition from the publisher. If a large share of those students instead got the text through used copies, file-sharing, or classmates, the publisher's sales volume could fall even though its stated preference numbers looked favorable. The argument therefore requires that most of those students will in fact purchase the digital edition through the publisher, which is option A. Applying the negation test confirms this: if that assumption is false, the predicted profit increase collapses.\n\nOption B overstates what the argument needs; the publisher's conclusion doesn't require that every print-preferring student quit the course, only that enough students still buy the digital edition, so this exaggerated claim isn't a necessary premise. Option C brings in a consideration -- future cost trends -- that the argument never relies on, since the comparison only concerns current production costs. Option D shifts the discussion to other academic disciplines entirely, which is outside the scope of a conclusion about one economics textbook's profits. Only A closes the actual gap between stated preference and realized purchasing behavior that the argument leaves open.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "The argument concludes that discontinuing print and selling only the (cheaper-to-produce) digital edition will increase overall profits, based on a survey showing most students prefer digital when both options are priced as described. For this inference to hold, the publisher must assume that the students who prefer digital will actually buy it from the publisher (generating revenue), rather than acquiring the content some other way (e.g., used print copies, illegal digital copies, borrowing, etc.) that would not contribute to the publisher's sales. Applying the \"negation test\": if it were fal",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:59:31.325Z",
+  "first_served_at": null
  },
  {
   "id": "7c3a160f-f47a-4e4b-8389-b7ffaecdf299",
@@ -439,7 +677,7 @@
   "verifier_note": "The sentence sets up a contrast: despite praise for scrupulous sourcing, the report's argument failed to convince even sympathetic reviewers, meaning the chain of inferences itself must have been weak/flimsy. \"Tenuous\" (weak, insubstantial, lacking a firm basis) directly captures this. \n\nChecking the distractors: \"meticulous\" and \"exhaustive\" both connote thoroughness/care, which would support rather than undermine the argument's credibility - inconsistent with reviewers refusing to endorse it. \"Cogent\" means convincing/logically compelling, the opposite of what's needed. \"Redundant\" (repetiti",
   "model": "sonnet",
   "created_at": "2026-08-22T20:21:10.404Z",
-  "first_served_at": null
+  "first_served_at": "2026-08-22T20:53:53.590Z"
  },
  {
   "id": "833a6189-5982-4ed5-9b18-26c18e6a64ea",
@@ -473,7 +711,24 @@
   "verifier_note": "Blank 1: The sentence sets up a contrast between Priestley's refusal to abandon phlogiston and the fact that Lavoisier's oxygen theory had \"proven demonstrably ___ in explaining combustion.\" This must be a word indicating oxygen theory's success/superiority, since the passage goes on to say Priestley judged his own theory \"not empirically inferior\" (implying oxygen theory was empirically superior). \"Superior\" fits; \"inadequate\" would contradict the historical consensus and the rest of the sentence's logic (which credits oxygen theory with real explanatory success), and \"derivative\" doesn't fit",
   "model": "sonnet",
   "created_at": "2026-08-22T20:22:37.694Z",
-  "first_served_at": null
+  "first_served_at": "2026-08-22T20:53:53.965Z"
+ },
+ {
+  "id": "8a61063e-0000-4dae-9a84-ea63f3d66243",
+  "section": "verbal",
+  "subtopic": "tc.three",
+  "format": "tc",
+  "difficulty": 2,
+  "payload": "{\"stem\":\"Although contemporary reviewers largely (i)______ the novelist's experimental debut, faulting its nonlinear chronology as merely (ii)______, later scholars have reread that same structural choice as a (iii)______ effort to reproduce the fractured rhythms of wartime memory.\",\"blanks\":[{\"options\":[\"dismissed\",\"extolled\",\"overlooked\"],\"correctIndex\":0},{\"options\":[\"gimmicky\",\"innovative\",\"disciplined\"],\"correctIndex\":0},{\"options\":[\"deliberate\",\"arbitrary\",\"incidental\"],\"correctIndex\":0}],\"explanation\":\"The word \\\"faulting\\\" tells you the reviewers' overall verdict was negative, which fixes blank (i) as dismissed; extolled means the opposite, and overlooked contradicts the fact that reviewers engaged with the book closely enough to criticize a specific feature of it.\\n\\nBlank (ii) needs a word that explains what \\\"faulting\\\" targeted: the reviewers treated the nonlinear chronology as a cheap trick, so gimmicky fits the diminishing sense signaled by \\\"merely.\\\" Innovative and disciplined are both approving terms that would make no sense as the object of a complaint.\\n\\nThe contrast word \\\"later\\\" plus \\\"reread\\\" signals a reversal of the original judgment: scholars now see intention where reviewers saw only a flaw, so the structure was in fact deliberate. Arbitrary and incidental both describe an unplanned choice, which would only restate the reviewers' original complaint rather than overturn it, so neither completes the intended reversal.\",\"difficulty\":2}",
+  "answer": "0,0,0",
+  "explanation": "The word \"faulting\" tells you the reviewers' overall verdict was negative, which fixes blank (i) as dismissed; extolled means the opposite, and overlooked contradicts the fact that reviewers engaged with the book closely enough to criticize a specific feature of it.\n\nBlank (ii) needs a word that explains what \"faulting\" targeted: the reviewers treated the nonlinear chronology as a cheap trick, so gimmicky fits the diminishing sense signaled by \"merely.\" Innovative and disciplined are both approving terms that would make no sense as the object of a complaint.\n\nThe contrast word \"later\" plus \"reread\" signals a reversal of the original judgment: scholars now see intention where reviewers saw only a flaw, so the structure was in fact deliberate. Arbitrary and incidental both describe an unplanned choice, which would only restate the reviewers' original complaint rather than overturn it, so neither completes the intended reversal.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "The sentence sets up an \"although\" contrast between contemporary reviewers' negative reaction and later scholars' more favorable reassessment.\n\nBlank 1: The reviewers \"faulted\" the chronology, so they must have reacted negatively to the debut overall. \"Dismissed\" fits this negative reception. \"Extolled\" (praised) directly contradicts the subsequent \"faulting,\" and \"overlooked\" (ignored/failed to notice) is incompatible with actively \"faulting\" a specific feature—you can't fault something you overlooked. So only \"dismissed\" works.\n\nBlank 2: The reviewers characterized the nonlinear chronology a",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:56:43.143Z",
+  "first_served_at": "2026-08-22T20:58:58.164Z"
  },
  {
   "id": "8f27eb22-55b1-43cc-8761-e12601a7fe46",
@@ -524,6 +779,40 @@
   "verifier_note": "The passage's key weakness is that three confounding changes (lower speed limits, red-light cameras, reduced traffic from bridge closure) occurred simultaneously with the bike lane installation, making it impossible to attribute the 40% fatality drop specifically to the bike lanes.\n\nTo strengthen the claim that bike lanes themselves were responsible, we need evidence that isolates the bike lanes' effect from these other factors.\n\n- A: Increased ridership shows the lanes were used, but says nothing about whether they caused the safety improvement independent of the other confounds. Doesn't isol",
   "model": "sonnet",
   "created_at": "2026-08-22T20:26:12.812Z",
+  "first_served_at": "2026-08-22T20:53:53.815Z"
+ },
+ {
+  "id": "9a8ae434-5b4d-44b4-b646-3195e0a0e118",
+  "section": "quant",
+  "subtopic": "arith.sequences",
+  "format": "ne",
+  "difficulty": 3,
+  "payload": "{\"stem\":\"A sequence is defined by $a_1 = 3$ and $a_{n+1} = a_n + 2n$ for $n \\\\geq 1$. What is the value of $a_{10}$?\",\"correctValue\":93,\"answerIsFraction\":false,\"checkExpr\":\"10*10 - 10 + 3\",\"explanation\":\"Unwind the recursion: a10 minus a1 equals the sum 2(1+2+...+9) = 2 times 45 = 90, so a10 = 3 + 90 = 93. In general an = n^2 - n + 3, and indeed 100 - 10 + 3 = 93. A common mistake is computing a9 instead of a10 (stopping the recursion one step early), giving 3 + 2(1+...+8) = 3 + 72 = 75. Another common mistake is summing 2k from k=1 to 10 rather than to 9, giving 3 + 110 = 113.\",\"difficulty\":3}",
+  "answer": "93",
+  "explanation": "Unwind the recursion: a10 minus a1 equals the sum 2(1+2+...+9) = 2 times 45 = 90, so a10 = 3 + 90 = 93. In general an = n^2 - n + 3, and indeed 100 - 10 + 3 = 93. A common mistake is computing a9 instead of a10 (stopping the recursion one step early), giving 3 + 2(1+...+8) = 3 + 72 = 75. Another common mistake is summing 2k from k=1 to 10 rather than to 9, giving 3 + 110 = 113.",
+  "check_expr": "10*10 - 10 + 3",
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "The recurrence a_{n+1} = a_n + 2n with a_1=3 gives a_n = 3 + sum_{k=1}^{n-1} 2k = 3 + n(n-1) = n^2 - n + 3. For n=10: 100 - 10 + 3 = 93. This can also be verified by direct iteration: 3,5,9,15,23,33,45,59,75,93. The question is a straightforward numeric-answer problem (no answer choices), clearly defined and unambiguous, with a single correct value.</reasoning>\n</invoke>\n",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:49:27.765Z",
+  "first_served_at": null
+ },
+ {
+  "id": "9b30afac-56e1-48de-8f8c-5a61a843ed20",
+  "section": "quant",
+  "subtopic": "alg.linear",
+  "format": "mc",
+  "difficulty": 3,
+  "payload": "{\"stem\":\"If $4a + 3b = 23$ and $3a + 4b = 20$, what is the value of $a - b$?\",\"options\":[\"-3\",\"43/7\",\"3\",\"11/7\",\"32/7\"],\"correctIndices\":[2],\"correctValue\":3,\"checkExpr\":\"23-20\",\"explanation\":\"Subtract the second equation from the first: $(4a+3b) - (3a+4b) = 23 - 20$, which gives $a - b = 3$. There's no need to solve for $a$ and $b$ individually. Option A comes from subtracting in the wrong order (computing $b-a$ instead of $a-b$). Option B comes from adding the equations instead of subtracting: $7a+7b=43$ gives $a+b = 43/7$, which some test-takers mistakenly report when asked for $a-b$. Options D and E are the individual values of $b$ and $a$ (solving the system fully gives $a = 32/7$, $b = 11/7$), reported by someone who solved for one variable but answered the wrong quantity.\",\"difficulty\":3}",
+  "answer": "2",
+  "explanation": "Subtract the second equation from the first: $(4a+3b) - (3a+4b) = 23 - 20$, which gives $a - b = 3$. There's no need to solve for $a$ and $b$ individually. Option A comes from subtracting in the wrong order (computing $b-a$ instead of $a-b$). Option B comes from adding the equations instead of subtracting: $7a+7b=43$ gives $a+b = 43/7$, which some test-takers mistakenly report when asked for $a-b$. Options D and E are the individual values of $b$ and $a$ (solving the system fully gives $a = 32/7$, $b = 11/7$), reported by someone who solved for one variable but answered the wrong quantity.",
+  "check_expr": "23-20",
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "Subtracting the second equation from the first: (4a+3b) - (3a+4b) = 23-20 → a - b = 3. This matches option C. Solving fully confirms consistency: adding the equations gives 7a+7b=43, so a+b=43/7 (which appears as a plausible distractor, option B), and solving simultaneously gives a=53/14, b=32/14, consistent with a-b=21/14=3/2... let me double check: actually a-b=3 directly from subtraction, no need to solve individually. The other options (11/7, 32/7, -3) are plausible distractors from sign errors or misapplied operations, but only one correct answer exists.",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:51:22.301Z",
   "first_served_at": null
  },
  {
@@ -592,7 +881,7 @@
   "verifier_note": "The sentence requires a word meaning \"confirmed/verified by evidence,\" consistent with the clause \"confirmed its central claims in exquisite detail.\" \"Corroborated\" and \"substantiated\" both precisely mean this and are near-synonyms, producing sentences with equivalent meaning. The other options fail: \"acclaimed\" and \"celebrated\" mean praised, not confirmed by evidence (a hypothesis being praised doesn't logically follow from being confirmed in detail by research); \"refuted\" is the opposite meaning; \"tolerated\" doesn't fit the sense of confirmation at all. No third option is a plausible synonym",
   "model": "sonnet",
   "created_at": "2026-08-22T20:23:14.336Z",
-  "first_served_at": null
+  "first_served_at": "2026-08-22T20:53:53.723Z"
  },
  {
   "id": "b13e3719-0494-49c0-a86d-6a7750f50176",
@@ -680,6 +969,40 @@
   "first_served_at": null
  },
  {
+  "id": "da8ebc68-a9fc-4f0b-b2e5-fa705d759629",
+  "section": "verbal",
+  "subtopic": "rc.argument",
+  "format": "rc",
+  "difficulty": 2,
+  "payload": "{\"passage\":\"After a middle school introduced a phonics-based reading program for its sixth graders last year, average reading scores on the district's standardized test rose by eleven points, the largest gain the school had recorded in a decade. The principal, noting that no other academic policy had changed during that period, concluded that the new reading program was responsible for the improvement and recommended that the district adopt it in every elementary and middle school. Teachers who had used the program reported that its structured lessons were straightforward to follow, and the district's overall enrollment held roughly steady over the year in question.\",\"stem\":\"Which of the following, if true, would most strengthen the principal's conclusion that the reading program was responsible for the score increase?\",\"options\":[\"A neighboring school with a similar student population that did not adopt the program recorded no significant change in reading scores over the same year.\",\"The standardized test used to measure reading scores has remained unchanged for the past five years.\",\"Several teachers reported that they found the new program easier to implement than the previous curriculum.\",\"The school's sixth-grade class included a higher proportion of students transferring from other districts than in previous years.\",\"The eleven-point gain was similar in size to the gains other schools in the region have typically seen after adopting any new curriculum.\"],\"correctIndices\":[0],\"explanation\":\"The principal's evidence is a before-and-after comparison at a single school, which cannot rule out other explanations for the gain, such as a district-wide trend, a shift in the student population, or simple year-to-year variation. To strengthen the causal claim, you need evidence that isolates the program itself as the differentiating factor. Option A supplies exactly that: a comparable school, similar in makeup, that did not adopt the program and showed no comparable gain. That contrast makes it much harder to attribute the rise to something other than the program.\\n\\nOption B only confirms that the test itself is a stable measuring instrument; it says nothing about what caused the scores to change, so it does not touch the causal question.\\n\\nOption C is anecdotal testimony about ease of use, not about outcomes, and ease of implementation has no logical bearing on whether the program actually improved reading ability.\\n\\nOption D, if anything, weakens the argument by introducing a plausible alternative explanation: a different student population could account for the score change independent of the program.\\n\\nOption E is the sharpest trap. If gains of this size typically follow any curriculum change, that suggests something like novelty or increased attention, rather than this particular program, is driving the improvement, which undercuts rather than supports the principal's specific claim.\",\"difficulty\":2}",
+  "answer": "0",
+  "explanation": "The principal's evidence is a before-and-after comparison at a single school, which cannot rule out other explanations for the gain, such as a district-wide trend, a shift in the student population, or simple year-to-year variation. To strengthen the causal claim, you need evidence that isolates the program itself as the differentiating factor. Option A supplies exactly that: a comparable school, similar in makeup, that did not adopt the program and showed no comparable gain. That contrast makes it much harder to attribute the rise to something other than the program.\n\nOption B only confirms that the test itself is a stable measuring instrument; it says nothing about what caused the scores to change, so it does not touch the causal question.\n\nOption C is anecdotal testimony about ease of use, not about outcomes, and ease of implementation has no logical bearing on whether the program actually improved reading ability.\n\nOption D, if anything, weakens the argument by introducing a plausible alternative explanation: a different student population could account for the score change independent of the program.\n\nOption E is the sharpest trap. If gains of this size typically follow any curriculum change, that suggests something like novelty or increased attention, rather than this particular program, is driving the improvement, which undercuts rather than supports the principal's specific claim.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "The principal's argument is a causal claim based on a single before/after comparison at one school, with the only support being that \"no other policy changed.\" This leaves open many alternative explanations (natural year-to-year variation, changes in student population, changes in the test, a general effect of adopting *any* new curriculum, etc.). The best way to strengthen such an argument is to introduce a comparison/control group that isolates the variable of interest.\n\nA does exactly this: a similar neighboring school that did NOT adopt the program saw no significant change in scores over ",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:59:34.100Z",
+  "first_served_at": null
+ },
+ {
+  "id": "dcf02f68-ae28-4b39-9147-23cadb938a9a",
+  "section": "quant",
+  "subtopic": "alg.linear",
+  "format": "qc",
+  "difficulty": 3,
+  "payload": "{\"stem\":\"The real numbers $x$ and $y$ satisfy $5x - 2y = 8$ and $15x - 6y = 24$.\",\"quantityA\":\"$x$\",\"quantityB\":\"$y$\",\"relation\":\"undetermined\",\"checkA\":null,\"checkB\":null,\"explanation\":\"The key insight is to notice that the second equation is just 3 times the first: $3(5x-2y) = 15x-6y$ and $3(8)=24$. So the two equations are not independent -- they describe the same line, and together they impose only one constraint on two unknowns. That means $x$ and $y$ are not pinned down to unique values; there are infinitely many pairs satisfying the system.\\n\\nFor example, $x=2, y=1$ satisfies both equations ($5(2)-2(1)=8$, $15(2)-6(1)=24$), and here $x>y$. But $x=4, y=6$ also satisfies both equations ($5(4)-2(6)=8$, $15(4)-6(6)=24$), and here $y>x$. Since both orderings occur, the relationship cannot be determined.\\n\\nThe trap is treating this as a standard two-equation, two-unknown system and rushing to \\\"solve\\\" it by elimination -- multiplying the first equation by 3 and subtracting the second gives $0=0$, a signal (easy to overlook under time pressure) that the system is dependent rather than a normal system with a single solution pair.\",\"difficulty\":3}",
+  "answer": "undetermined",
+  "explanation": "The key insight is to notice that the second equation is just 3 times the first: $3(5x-2y) = 15x-6y$ and $3(8)=24$. So the two equations are not independent -- they describe the same line, and together they impose only one constraint on two unknowns. That means $x$ and $y$ are not pinned down to unique values; there are infinitely many pairs satisfying the system.\n\nFor example, $x=2, y=1$ satisfies both equations ($5(2)-2(1)=8$, $15(2)-6(1)=24$), and here $x>y$. But $x=4, y=6$ also satisfies both equations ($5(4)-2(6)=8$, $15(4)-6(6)=24$), and here $y>x$. Since both orderings occur, the relationship cannot be determined.\n\nThe trap is treating this as a standard two-equation, two-unknown system and rushing to \"solve\" it by elimination -- multiplying the first equation by 3 and subtracting the second gives $0=0$, a signal (easy to overlook under time pressure) that the system is dependent rather than a normal system with a single solution pair.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "The second equation 15x - 6y = 24 is just 3 times the first equation (5x - 2y = 8), so it provides no new information. There is really only one independent equation with two unknowns, so x and y are not uniquely determined — infinitely many (x, y) pairs satisfy both equations (e.g., x=0,y=-4 gives x<y; x=2,y=1 gives x>y; x can even equal y if x=y=8/3, since 5x-2x=3x=8 → x=8/3, check 15(8/3)-6(8/3)=40-16=24, works). Since different valid solutions give different orderings of x and y, the relationship cannot be determined. This makes D correct, and the question is well-formed as a test of recogn",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:51:32.745Z",
+  "first_served_at": null
+ },
+ {
   "id": "e1f50dbd-28ef-4086-ab88-33d57533db2e",
   "section": "quant",
   "subtopic": "arith.ratios",
@@ -694,6 +1017,23 @@
   "verifier_note": "Combine ratios: X:Y=5:7=15:21, Y:Z=3:4=21:28, so X:Y:Z=15:21:28.\n\nLet rates be 15k,21k,28k (units/hour). X takes 6 hours, so job size = 15k*6 = 90k units.\n\nTime for Z = 90k / 28k = 90/28 = 45/14 ≈ 3.21 hours.\n\nCompare to 4 hours: 45/14 < 4, so Quantity B (4 hours) is greater.\n\nThe problem is well-formed: ratios combine consistently, and a unique numeric answer follows.</reasoning>\n</invoke>\n",
   "model": "sonnet",
   "created_at": "2026-08-22T20:44:46.617Z",
+  "first_served_at": null
+ },
+ {
+  "id": "e3fb3bd0-5728-47fd-801e-4b9aa0cc7b78",
+  "section": "quant",
+  "subtopic": "arith.sequences",
+  "format": "mc",
+  "difficulty": 3,
+  "payload": "{\"stem\":\"In an arithmetic sequence, the 5th term is 38 and the 12th term is 87. What is the sum of the first 10 terms of this sequence?\",\"difficulty\":3,\"options\":[\"345\",\"415\",\"582\",\"625\",\"695\"],\"correctIndices\":[1],\"correctValue\":415,\"checkExpr\":\"5*(10+73)\",\"explanation\":\"The gap from the 5th to the 12th term spans 7 intervals, so $7d = 87 - 38 = 49$, giving $d = 7$. Then $a_1 = a_5 - 4d = 38 - 28 = 10$, and the 10th term is $a_{10} = a_1 + 9d = 10 + 63 = 73$. The sum of the first 10 terms is $\\\\frac{10}{2}(a_1 + a_{10}) = 5(10+73) = 415$, choice B.\\n\\nThe traps: C (582) comes from using $n=12$ in the sum formula instead of 10. D (625) comes from averaging 38 and 87 and multiplying by 10, treating those as if they were the first and last of the ten terms wanted. E (695) results from mistakenly treating the 5th term itself as $a_1$ and computing $38+9\\\\cdot7$ as the \\\"10th term\\\" instead of continuing from the true $a_1=10$. A (345) comes from an off-by-one error in finding $a_1$, subtracting $5d$ instead of $4d$ from $a_5$.</explanation>\\n</invoke>\\n\"}",
+  "answer": "1",
+  "explanation": "The gap from the 5th to the 12th term spans 7 intervals, so $7d = 87 - 38 = 49$, giving $d = 7$. Then $a_1 = a_5 - 4d = 38 - 28 = 10$, and the 10th term is $a_{10} = a_1 + 9d = 10 + 63 = 73$. The sum of the first 10 terms is $\\frac{10}{2}(a_1 + a_{10}) = 5(10+73) = 415$, choice B.\n\nThe traps: C (582) comes from using $n=12$ in the sum formula instead of 10. D (625) comes from averaging 38 and 87 and multiplying by 10, treating those as if they were the first and last of the ten terms wanted. E (695) results from mistakenly treating the 5th term itself as $a_1$ and computing $38+9\\cdot7$ as the \"10th term\" instead of continuing from the true $a_1=10$. A (345) comes from an off-by-one error in finding $a_1$, subtracting $5d$ instead of $4d$ from $a_5$.</explanation>\n</invoke>\n",
+  "check_expr": "5*(10+73)",
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "Let the first term be a and common difference d.\na5 = a + 4d = 38\na12 = a + 11d = 87\nSubtracting: 7d = 49 → d = 7\nThen a = 38 - 4(7) = 38 - 28 = 10\n\nSum of first 10 terms: S10 = 10/2 * [2a + 9d] = 5 * [20 + 63] = 5 * 83 = 415\n\nCheck: a5 = 10+28=38 ✓, a12=10+77=87 ✓, so S10=415 matches option B.\n\nThe question is well-formed: it gives sufficient information to uniquely determine the arithmetic sequence and compute a single correct sum, matching exactly one answer choice (B).",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:49:18.722Z",
   "first_served_at": null
  },
  {
@@ -745,6 +1085,23 @@
   "verifier_note": "The passage opens by describing the \"tragedy of the commons\" assumption (that shared resources inevitably degrade), then presents field research showing that self-governing communities with monitoring, graduated sanctions, and adaptive rule-making frequently sustain shared resources without privatization or central regulation. It closes by warning against treating tragedy as inevitable, since doing so forecloses inquiry into the actual conditions for success or failure. This matches B precisely: challenging the inevitability assumption with evidence for self-governing institutions.\n\nOther opti",
   "model": "sonnet",
   "created_at": "2026-08-22T20:25:32.040Z",
+  "first_served_at": "2026-08-22T20:53:53.665Z"
+ },
+ {
+  "id": "eef7414e-9e4e-4572-9bbb-74bbf88a61c2",
+  "section": "quant",
+  "subtopic": "alg.linear",
+  "format": "qc",
+  "difficulty": 3,
+  "payload": "{\"stem\":\"If $3x + 2y = 16$ and $x + y = 7$,\",\"quantityA\":\"$x^2 + y$\",\"quantityB\":\"$y^2 - x$\",\"relation\":\"B\",\"checkA\":\"2^2 + 5\",\"checkB\":\"5^2 - 2\",\"explanation\":\"The system has a unique solution because the two equations are independent (their coefficient determinant $3(1)-2(1)=1 \\\\neq 0$). Solve by substitution: from $x+y=7$, $y = 7-x$. Substituting into $3x+2y=16$ gives $3x + 2(7-x) = 16$, so $3x + 14 - 2x = 16$, giving $x = 2$ and then $y = 5$.\\n\\nNow evaluate each quantity: Quantity A is $x^2 + y = 4 + 5 = 9$, and Quantity B is $y^2 - x = 25 - 2 = 23$. So Quantity B is greater.\\n\\nThe main trap is stopping too early -- after finding $x+y=7$ or even $x=2, y=5$, it's tempting to eyeball the two expressions as \\\"roughly symmetric\\\" and guess they're equal or close, especially since both involve one variable squared and the other linear. But squaring the larger variable ($y=5$) makes Quantity B grow much faster than squaring the smaller one ($x=2$) makes Quantity A grow, so the two expressions are not actually comparable at a glance -- they must be computed explicitly once $x$ and $y$ are known.\",\"difficulty\":3}",
+  "answer": "B",
+  "explanation": "The system has a unique solution because the two equations are independent (their coefficient determinant $3(1)-2(1)=1 \\neq 0$). Solve by substitution: from $x+y=7$, $y = 7-x$. Substituting into $3x+2y=16$ gives $3x + 2(7-x) = 16$, so $3x + 14 - 2x = 16$, giving $x = 2$ and then $y = 5$.\n\nNow evaluate each quantity: Quantity A is $x^2 + y = 4 + 5 = 9$, and Quantity B is $y^2 - x = 25 - 2 = 23$. So Quantity B is greater.\n\nThe main trap is stopping too early -- after finding $x+y=7$ or even $x=2, y=5$, it's tempting to eyeball the two expressions as \"roughly symmetric\" and guess they're equal or close, especially since both involve one variable squared and the other linear. But squaring the larger variable ($y=5$) makes Quantity B grow much faster than squaring the smaller one ($x=2$) makes Quantity A grow, so the two expressions are not actually comparable at a glance -- they must be computed explicitly once $x$ and $y$ are known.",
+  "check_expr": "2^2 + 5 | 5^2 - 2",
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "Solve the system: from x+y=7, y=7-x. Substitute into 3x+2y=16: 3x+2(7-x)=16 → 3x+14-2x=16 → x=2, then y=5. This is a unique solution (two independent linear equations, two unknowns).\n\nQuantity A: x^2+y = 4+5 = 9\nQuantity B: y^2-x = 25-2 = 23\n\nQuantity B is greater. The system has a unique solution, so the relationship is determined and the question is well formed.</reasoning>\n</invoke>\n",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:50:00.504Z",
   "first_served_at": null
  },
  {
@@ -762,6 +1119,23 @@
   "verifier_note": "Quantity A: 150 × 0.80 = 120, then 120 × 0.85 = 102.\nQuantity B: 150 × (1 − 0.34) = 150 × 0.66 = 99.\n102 > 99, so Quantity A is greater. This matches the well-known GRE trap that successive percentage discounts (20% then 15%) are not equivalent to their sum (35%) or even to a slightly smaller combined discount like 34% — actually the combined equivalent discount for 20% then 15% is 1 − 0.8×0.85 = 1 − 0.68 = 32%, which is less discount than 34%, so Quantity A (less discount applied) is indeed greater. The problem is well-formed: the calculation is correct, only one answer choice is defensible, ",
   "model": "sonnet",
   "created_at": "2026-08-22T20:45:31.141Z",
+  "first_served_at": null
+ },
+ {
+  "id": "f36ccfd7-10f7-47df-b8a6-9bc7cb5cfc20",
+  "section": "quant",
+  "subtopic": "alg.inequalities",
+  "format": "qc",
+  "difficulty": 3,
+  "payload": "{\"stem\":\"$x$ satisfies $-9 < 3 - 2x < 1$.\",\"quantityA\":\"$2x - 3$\",\"quantityB\":\"$7$\",\"relation\":\"undetermined\",\"checkA\":null,\"checkB\":\"7\",\"explanation\":\"Split the compound inequality into two parts and solve each for $x$, remembering to reverse the inequality sign whenever you divide by a negative number.\\n\\nFrom $3-2x<1$: $-2x<-2$, and dividing by $-2$ flips the sign, giving $x>1$.\\n\\nFrom $-9<3-2x$: $-12<-2x$, and dividing by $-2$ again flips the sign, giving $x<6$.\\n\\nTogether, $1<x<6$. A student who forgets to flip the inequality would instead get something like $-6<x<-1$, wrongly concluding that $2x-3$ is always negative and hence always less than $7$ -- that is the trap baiting an answer of B.\\n\\nWith the correct range $1<x<6$, multiply through by $2$ and subtract $3$ to see that $2x-3$ ranges over $(-1,9)$. Since $7$ lies strictly inside this interval, $x$ can be chosen so that $2x-3$ is less than $7$ (say $x=2$, giving $1$), equal to $7$ (at $x=5$), or greater than $7$ (say $x=5.5$, giving $8$). Because both orderings -- and even equality -- actually occur for values of $x$ permitted by the constraint, the relationship cannot be determined from the given information.\",\"difficulty\":3}",
+  "answer": "undetermined",
+  "explanation": "Split the compound inequality into two parts and solve each for $x$, remembering to reverse the inequality sign whenever you divide by a negative number.\n\nFrom $3-2x<1$: $-2x<-2$, and dividing by $-2$ flips the sign, giving $x>1$.\n\nFrom $-9<3-2x$: $-12<-2x$, and dividing by $-2$ again flips the sign, giving $x<6$.\n\nTogether, $1<x<6$. A student who forgets to flip the inequality would instead get something like $-6<x<-1$, wrongly concluding that $2x-3$ is always negative and hence always less than $7$ -- that is the trap baiting an answer of B.\n\nWith the correct range $1<x<6$, multiply through by $2$ and subtract $3$ to see that $2x-3$ ranges over $(-1,9)$. Since $7$ lies strictly inside this interval, $x$ can be chosen so that $2x-3$ is less than $7$ (say $x=2$, giving $1$), equal to $7$ (at $x=5$), or greater than $7$ (say $x=5.5$, giving $8$). Because both orderings -- and even equality -- actually occur for values of $x$ permitted by the constraint, the relationship cannot be determined from the given information.",
+  "check_expr": "7",
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "Solve the inequality: -9 < 3 - 2x < 1.\nSubtract 3: -12 < -2x < -2.\nDivide by -2 (flip inequalities): 6 > x > 1, i.e., 1 < x < 6.\n\nQuantity A = 2x - 3. As x ranges over (1,6), 2x-3 ranges over (-1, 9) (open interval, since endpoints excluded).\n\nCompare to Quantity B = 7:\n- If x = 2 (valid, since 1<2<6): 2x-3 = 1, which is less than 7 → B greater.\n- If x = 5.5 (valid): 2x-3 = 8, which is greater than 7 → A greater.\n\nSince the relationship changes depending on the value of x within the allowed range, the answer is D (cannot be determined). The question is well-formed: the algebra is correct, and ",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:53:55.065Z",
   "first_served_at": null
  },
  {
@@ -797,6 +1171,23 @@
   "model": "sonnet",
   "created_at": "2026-08-22T20:39:56.268Z",
   "first_served_at": null
+ },
+ {
+  "id": "fb0b6c22-b36d-4e0e-ae12-fe78ac467b4b",
+  "section": "verbal",
+  "subtopic": "tc.three",
+  "format": "tc",
+  "difficulty": 2,
+  "payload": "{\"stem\":\"The consultant's report earned praise for its (i) ______: instead of couching its recommendations in technical jargon, it explained each proposal in terms accessible to nonspecialists. Critics countered, however, that this same plainness, by glossing over necessary distinctions, produced (ii) ______ conclusions that specialists judged (iii) ______ rather than genuinely instructive.\",\"blanks\":[{\"options\":[\"lucidity\",\"verbosity\",\"ambiguity\"],\"correctIndex\":0},{\"options\":[\"oversimplified\",\"overstated\",\"counterintuitive\"],\"correctIndex\":0},{\"options\":[\"facile\",\"indispensable\",\"meticulous\"],\"correctIndex\":0}],\"explanation\":\"The first sentence sets up a contrast: the report avoided jargon and instead used language accessible to nonspecialists, so the quality it was praised for must mean clarity -- lucidity. Verbosity would describe wordiness, which has nothing to do with avoiding jargon, and ambiguity is the opposite of the clarity the sentence describes.\\n\\nThe second sentence pivots with \\\"however\\\" to the critics' complaint: the same plainness that made the report clear also caused it to gloss over necessary distinctions. Omitting distinctions is precisely what produces oversimplified conclusions, so that is the only word consistent with the stated cause. Overstated conclusions would result from exaggeration, not from omitting nuance, and counterintuitive conclusions would result from surprising logic, not from flattening distinctions -- neither follows from the stated cause.\\n\\nThe final phrase, \\\"rather than genuinely instructive,\\\" tells you the specialists' judgment must be a near-opposite of instructive, matching the earlier idea of oversimplification. Facile captures a judgment that is superficially clear but intellectually thin, which fits both the contrast with \\\"instructive\\\" and the earlier charge of oversimplification. Indispensable and meticulous both describe conclusions of high value or careful rigor, directly contradicting the critics' negative assessment.\",\"difficulty\":2}",
+  "answer": "0,0,0",
+  "explanation": "The first sentence sets up a contrast: the report avoided jargon and instead used language accessible to nonspecialists, so the quality it was praised for must mean clarity -- lucidity. Verbosity would describe wordiness, which has nothing to do with avoiding jargon, and ambiguity is the opposite of the clarity the sentence describes.\n\nThe second sentence pivots with \"however\" to the critics' complaint: the same plainness that made the report clear also caused it to gloss over necessary distinctions. Omitting distinctions is precisely what produces oversimplified conclusions, so that is the only word consistent with the stated cause. Overstated conclusions would result from exaggeration, not from omitting nuance, and counterintuitive conclusions would result from surprising logic, not from flattening distinctions -- neither follows from the stated cause.\n\nThe final phrase, \"rather than genuinely instructive,\" tells you the specialists' judgment must be a near-opposite of instructive, matching the earlier idea of oversimplification. Facile captures a judgment that is superficially clear but intellectually thin, which fits both the contrast with \"instructive\" and the earlier charge of oversimplification. Indispensable and meticulous both describe conclusions of high value or careful rigor, directly contradicting the critics' negative assessment.",
+  "check_expr": null,
+  "status": "verified",
+  "reject_reason": null,
+  "verifier_note": "Blank (i): The report is praised for explaining recommendations \"in terms accessible to nonspecialists\" instead of jargon — this is \"lucidity\" (clarity). \"Verbosity\" (wordiness) contradicts the idea of plain, accessible language, and \"ambiguity\" contradicts being praised for clear explanation. So (A) lucidity is correct.\n\nBlank (ii): The same plainness \"glossing over necessary distinctions\" produced conclusions that are \"oversimplified\" — a direct match for glossing over important nuances. \"Overstated\" (exaggerated) and \"counterintuitive\" (surprising/against expectation) don't match the idea o",
+  "model": "sonnet",
+  "created_at": "2026-08-22T20:55:59.428Z",
+  "first_served_at": "2026-08-22T20:58:44.214Z"
  },
  {
   "id": "ff15a622-9388-4ff5-95a9-76fca28fe5ea",

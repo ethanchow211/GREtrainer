@@ -14,6 +14,7 @@ import { readyCount, runBuffer, startBufferLoop, status as bufferStatus, generat
 import { coach, describeResponse } from './coach.ts'
 import { computeStats } from './stats.ts'
 import { startMock, getMock, submitSection, estimateScore, mockReadiness } from './mock.ts'
+import { harvestFrom, dueCards, vocabStats, reviewCard, fillDefinitions } from './vocab.ts'
 import { requireSubtopic, SUBTOPICS, type Section } from '../content/taxonomy.ts'
 import { ERROR_TAGS, errorTagsFor } from '../content/errors.ts'
 import type { StoredQuestion } from './store.ts'
@@ -208,9 +209,15 @@ app.post('/api/session/:id/answer', (req, res) => {
     saveSchedule(q.id, nextSchedule(existing, quality))
   }
 
+  // A missed Text Completion or Sentence Equivalence question is the best possible
+  // source of words to learn: they have already cost you a point.
+  let wordsAdded = 0
+  if (!result.correct) wordsAdded = harvestFrom(q)
+
   const sub = requireSubtopic(q.subtopic)
   res.json({
     attemptId,
+    wordsAdded,
     correct: result.correct,
     correctIndices: result.correctIndices,
     correctValue: result.correctValue,
@@ -374,6 +381,30 @@ app.post('/api/mock/:id/section/:n/submit', (req, res) => {
   } catch (e) {
     res.status(400).json({ error: (e as Error).message })
   }
+})
+
+// ----------------------------------------------------------------------- vocabulary
+
+app.get('/api/vocab/stats', (_req, res) => {
+  res.json(vocabStats())
+})
+
+app.get('/api/vocab/due', (_req, res) => {
+  res.json({ cards: dueCards(20), stats: vocabStats() })
+})
+
+app.post('/api/vocab/review', (req, res) => {
+  const body = (req.body ?? {}) as { word?: string; knew?: 'no' | 'hard' | 'yes' }
+  if (!body.word || !['no', 'hard', 'yes'].includes(body.knew ?? '')) {
+    res.status(400).json({ error: 'word and knew (no | hard | yes) are required' })
+    return
+  }
+  const card = reviewCard(body.word, body.knew as 'no' | 'hard' | 'yes')
+  if (!card) {
+    res.status(404).json({ error: 'no such word in the deck' })
+    return
+  }
+  res.json({ card, stats: vocabStats() })
 })
 
 // ------------------------------------------------------------------ serve the app

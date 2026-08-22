@@ -7,6 +7,7 @@ import { saveQuestion, recentStems } from './store.ts'
 import { allMastery, needScore, getMastery } from './mastery.ts'
 import { targetDifficulty } from './select.ts'
 import { requireSubtopic, subtopicsFor, type Difficulty, type Format, type Section } from '../content/taxonomy.ts'
+import { fillDefinitions } from './vocab.ts'
 
 /**
  * Keeping questions ready before you ask for them.
@@ -210,6 +211,9 @@ export function startBufferLoop(section: Section | 'both' = 'both', intervalMs =
   const tick = async () => {
     try {
       await runBuffer(section)
+      // Defining a dozen collected words costs one call, so it rides along with
+      // the question top-up rather than needing its own schedule.
+      await fillDefinitions()
     } catch (e) {
       lastError = String(e)
     }

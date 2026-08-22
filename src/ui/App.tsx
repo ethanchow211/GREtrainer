@@ -3,6 +3,7 @@ import { QuestionView } from './QuestionView.tsx'
 import { MathText } from './MathText.tsx'
 import { StrategyReader } from './StrategyReader.tsx'
 import { MockExam } from './MockExam.tsx'
+import { Vocab } from './Vocab.tsx'
 import {
   api,
   type AnswerResponse,
@@ -14,7 +15,7 @@ import {
   type Status,
 } from './api.ts'
 
-type Screen = 'start' | 'drill' | 'progress' | 'strategies' | 'mock'
+type Screen = 'start' | 'drill' | 'progress' | 'strategies' | 'mock' | 'vocab'
 
 export function App() {
   const [screen, setScreen] = useState<Screen>('start')
@@ -54,6 +55,9 @@ export function App() {
                 </span>
               </>
             )}
+            <button type="button" onClick={() => setScreen('vocab')} className="underline underline-offset-2">
+              Vocab
+            </button>
             <button type="button" onClick={() => setScreen('mock')} className="underline underline-offset-2">
               Mock exam
             </button>
@@ -82,6 +86,7 @@ export function App() {
         {screen === 'progress' && <Progress />}
         {screen === 'strategies' && <Strategies />}
         {screen === 'mock' && <MockExam onError={setError} />}
+        {screen === 'vocab' && <Vocab onError={setError} />}
       </main>
     </div>
   )

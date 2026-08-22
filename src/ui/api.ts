@@ -111,6 +111,19 @@ export type MockSectionResult = {
   }>
 }
 
+export type VocabCard = {
+  word: string
+  definition: string
+  seenIn: string | null
+  dueAt: string
+  intervalDays: number
+  ease: number
+  reps: number
+  lapses: number
+}
+
+export type VocabStats = { total: number; due: number; pending: number; learned: number }
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
     ...init,
@@ -159,6 +172,14 @@ export const api = {
     request<Coaching>('/api/coach', {
       method: 'POST',
       body: JSON.stringify({ questionId, response }),
+    }),
+
+  vocabDue: () => request<{ cards: VocabCard[]; stats: VocabStats }>('/api/vocab/due'),
+
+  reviewVocab: (word: string, knew: 'no' | 'hard' | 'yes') =>
+    request<{ card: VocabCard; stats: VocabStats }>('/api/vocab/review', {
+      method: 'POST',
+      body: JSON.stringify({ word, knew }),
     }),
 
   mockReadiness: () =>
