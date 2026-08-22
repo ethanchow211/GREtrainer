@@ -42,8 +42,9 @@ in the style of the test.
 
 ## Requirements
 
-- **Node.js 24 or newer.** The database (`node:sqlite`) and TypeScript support are
-  both built into Node itself, so there is no build step and almost nothing to install.
+- **Node.js 24 or newer.** The database (`node:sqlite`) and TypeScript support are both
+  built into Node itself, so the server runs straight from source with nothing to compile.
+  Only the browser interface gets built, by a single `npm run build`.
 - **Claude Code, installed and signed in** with a Pro or Max subscription. Check with:
   ```
   claude --version
@@ -106,16 +107,55 @@ gauge of how hard you are leaning on the subscription.
 | `src/server/db.ts` | Database schema and the daily call budget. |
 | `src/content/taxonomy.ts` | Every topic the GRE tests, and which answer formats each uses. |
 | `src/content/errors.ts` | Why questions go wrong — the tags that drive strategy recommendations. |
+| `src/server/mastery.ts` | The skill estimate and the review schedule. |
+| `src/server/select.ts` | Which question to ask next. |
+| `src/server/buffer.ts` | The background worker that keeps questions ready. |
+| `src/ui/` | The interface. |
 | `content/strategies/` | Hand-written strategy pages, surfaced when you miss a related question. |
 | `data/gre.db` | Your questions and progress. Not in git. |
+
+## Using it
+
+Build the interface once, then start the app:
+
+```
+npm run build
+npm start
+```
+
+Open the address it prints (http://localhost:5174 by default). Pick Quant, Verbal, or
+Mixed, and start answering.
+
+The first few questions may take half a minute each while the pool fills. After that a
+background worker keeps a stock of verified questions ready in the topics you are weakest
+at, so you never wait.
 
 ## Commands
 
 | Command | What it does |
 | --- | --- |
+| `npm start` | Run the app. Needs `npm run build` first. |
+| `npm run build` | Build the interface. Re-run after changing anything in `src/ui`. |
+| `npm run dev` | Development mode with instant reloading, on a separate port. |
 | `npm run smoke` | Generate and verify a spread of questions; report the pass rate. |
-| `npm test` | Run the unit tests (the arithmetic evaluator and the scoring logic). |
+| `npm run review` | Print stored questions so you can judge their quality yourself. |
+| `npm test` | Run the unit tests. |
 | `npm run typecheck` | Check the types without running anything. |
+
+## What it does while you drill
+
+- **Picks topics by weakness.** Each subtopic carries a running estimate of your accuracy
+  along with how uncertain that estimate still is, so topics you are bad at *and* topics
+  barely measured both come up. Percent-correct is useless at three questions; this is
+  not.
+- **Interleaves.** Never more than one question from the same subtopic in a short window.
+  Blocked practice feels more productive and works worse.
+- **Brings misses back.** Anything you get wrong enters a spaced schedule — the gap grows
+  while you keep getting it right and collapses when you do not.
+- **Diagnoses the miss.** After a wrong answer Claude explains why *your* specific answer
+  was tempting, picks the error tag, and points at the strategy page that addresses it.
+- **Tracks why, not just what.** "41% of your quant misses are arithmetic slips, not
+  concept gaps" changes what you should practise. A topic breakdown does not.
 
 ## Your data
 

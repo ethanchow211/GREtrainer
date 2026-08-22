@@ -27,6 +27,8 @@ export const config = {
   bufferDepth: num('GRE_BUFFER_DEPTH', 5),
   callTimeoutSec: num('GRE_CALL_TIMEOUT_SEC', 120),
   port: num('GRE_PORT', 5174),
-  dbPath: resolve(ROOT, 'data', 'gre.db'),
+  // Overridable so tests can run against a scratch database instead of your real
+  // progress. Not something you would normally set.
+  dbPath: str('GRE_DB_PATH', resolve(ROOT, 'data', 'gre.db')),
   strategiesDir: resolve(ROOT, 'content', 'strategies'),
 } as const

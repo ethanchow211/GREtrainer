@@ -1,0 +1,61 @@
+@import "tailwindcss";
+@import "katex/dist/katex.min.css";
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* KaTeX defaults to a slightly larger size than surrounding text. */
+.katex { font-size: 1.05em; }
+
+/* Strategy pages are hand-written markdown, rendered to plain HTML. Tailwind's
+   reset removes default element styling, so the readable typography is restored
+   here rather than pulling in a typography plugin. */
+.strategy-prose { line-height: 1.65; }
+.strategy-prose h2 { font-size: 1.15rem; font-weight: 600; margin: 1.6em 0 0.5em; letter-spacing: -0.01em; }
+.strategy-prose h2:first-child { margin-top: 0; }
+.strategy-prose h3 { font-size: 1rem; font-weight: 600; margin: 1.3em 0 0.4em; }
+.strategy-prose p { margin: 0.8em 0; }
+.strategy-prose ul, .strategy-prose ol { margin: 0.8em 0; padding-left: 1.4em; }
+.strategy-prose ul { list-style: disc; }
+.strategy-prose ol { list-style: decimal; }
+.strategy-prose li { margin: 0.35em 0; }
+.strategy-prose li::marker { color: rgb(148 163 184); }
+.strategy-prose strong { font-weight: 600; }
+.strategy-prose em { font-style: italic; }
+.strategy-prose code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  background: rgb(241 245 249);
+  padding: 0.1em 0.35em;
+  border-radius: 0.25rem;
+}
+.strategy-prose blockquote {
+  border-left: 3px solid rgb(148 163 184);
+  padding: 0.1em 0 0.1em 1em;
+  margin: 1em 0;
+  color: rgb(71 85 105);
+}
+.strategy-prose table { width: 100%; border-collapse: collapse; margin: 1em 0; font-size: 0.92em; }
+.strategy-prose th, .strategy-prose td {
+  border: 1px solid rgb(203 213 225);
+  padding: 0.4em 0.6em;
+  text-align: left;
+}
+.strategy-prose th { background: rgb(248 250 252); font-weight: 600; }
+.strategy-prose a { color: rgb(2 132 199); text-decoration: underline; text-underline-offset: 2px; }
+.strategy-prose hr { border: 0; border-top: 1px solid rgb(203 213 225); margin: 1.5em 0; }
+
+@media (prefers-color-scheme: dark) {
+  .strategy-prose code { background: rgb(30 41 59); }
+  .strategy-prose blockquote { color: rgb(148 163 184); }
+  .strategy-prose th, .strategy-prose td { border-color: rgb(51 65 85); }
+  .strategy-prose th { background: rgb(15 23 42); }
+  .strategy-prose a { color: rgb(56 189 248); }
+  .strategy-prose hr { border-top-color: rgb(51 65 85); }
+}

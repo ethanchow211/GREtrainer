@@ -29,6 +29,11 @@ Absolute rules:
   questions, not textbook drills or word-problem whimsy.
 - The explanation teaches the method, not just the arithmetic. State the insight
   that makes the question quick, and name the trap the wrong options are baiting.
+- The explanation must be finished prose, not your reasoning as it happens. Never
+  correct yourself mid-sentence, never write "actually" or "in fact" to revise
+  something you just said, and never leave a parenthetical where you reconsider an
+  argument. Work the problem out first, then write only the clean final account.
+- Separate paragraphs in the explanation with a blank line.
 
 Formatting:
 - Write mathematics in LaTeX between single dollar signs, like $x^2 + 3x - 4 = 0$

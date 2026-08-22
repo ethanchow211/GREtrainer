@@ -8,3 +8,4 @@ data/*.db-shm
 !.env.example
 dist/
 *.log
+.playwright-mcp/
