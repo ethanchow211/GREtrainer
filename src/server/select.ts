@@ -15,6 +15,10 @@ import type { Generated } from './schemas.ts'
  *   - Interleaving. Never more than a couple of questions from one subtopic in a
  *     row. Practising one topic in a block feels more productive and demonstrably
  *     works worse than mixing topics up.
+ *
+ * On top of those, a Mixed session is held to an even split: one maths question for
+ * every English one. See targetSection below for why that has to be enforced rather
+ * than left to the weighting.
  */
 
 /** At most this share of a session is review rather than new material. */
@@ -33,10 +37,40 @@ export type SessionState = {
   /** How many of the questions served so far were reviews. */
   reviewsServed: number
   served: number
+  /** How many questions from each section have been served this session. */
+  sectionCounts: Record<Section, number>
 }
 
 export function newSession(section: Section | 'both'): SessionState {
-  return { section, recentSubtopics: [], servedIds: [], reviewsServed: 0, served: 0 }
+  return {
+    section,
+    recentSubtopics: [],
+    servedIds: [],
+    reviewsServed: 0,
+    served: 0,
+    sectionCounts: { quant: 0, verbal: 0 },
+  }
+}
+
+/**
+ * Which section the next question must come from.
+ *
+ * In a Mixed session the split is enforced rather than left to chance: whichever
+ * section is behind gets the next question, and a tie is broken at random. The two
+ * running counts can therefore never differ by more than one, so any Mixed session
+ * -- of any length, stopped at any point -- is half maths and half English.
+ *
+ * It has to be enforced because quant has twice as many subtopics as verbal. Picking
+ * a subtopic by need across the pooled list, which is what used to happen, handed out
+ * roughly two quant questions for every verbal one purely because there were more
+ * quant buckets to land in.
+ */
+export function targetSection(state: SessionState, random = Math.random): Section {
+  if (state.section !== 'both') return state.section
+  const { quant, verbal } = state.sectionCounts
+  if (quant < verbal) return 'quant'
+  if (verbal < quant) return 'verbal'
+  return random() < 0.5 ? 'quant' : 'verbal'
 }
 
 /** Difficulty to aim for, from how well you are doing at that subtopic. */
@@ -49,9 +83,8 @@ export function targetDifficulty(m: Mastery): Difficulty {
   return 5
 }
 
-function eligibleSubtopics(state: SessionState): Mastery[] {
-  const sections: Section[] = state.section === 'both' ? ['quant', 'verbal'] : [state.section]
-  const ids = new Set(sections.flatMap((s) => subtopicsFor(s).map((t) => t.id)))
+function eligibleSubtopics(state: SessionState, section: Section): Mastery[] {
+  const ids = new Set(subtopicsFor(section).map((t) => t.id))
 
   const recent = state.recentSubtopics.slice(-INTERLEAVE_WINDOW)
   const overused = new Set(
@@ -75,8 +108,8 @@ function eligibleSubtopics(state: SessionState): Mastery[] {
  * would drill one thing to death and never revisit the others, and it makes a
  * session feel mechanical.
  */
-export function chooseSubtopic(state: SessionState, random = Math.random): string {
-  const candidates = eligibleSubtopics(state)
+export function chooseSubtopic(state: SessionState, section: Section, random = Math.random): string {
+  const candidates = eligibleSubtopics(state, section)
   if (candidates.length === 0) throw new Error('no subtopics available for this section')
 
   // Cubed so genuinely weak topics dominate without starving the rest.
@@ -170,20 +203,21 @@ export function takeAnyFromPool(
   return row ? hydrate(row) : null
 }
 
-/** A question that has fallen due for review. */
-export function takeDueReview(state: SessionState): StoredQuestion | null {
+/**
+ * A question that has fallen due for review, from the section it is this section's
+ * turn to serve. Reviews are held to the same even split as new material -- letting
+ * them ignore it would be an easy way for a backlog in one measure to take the
+ * session over.
+ */
+export function takeDueReview(state: SessionState, section: Section): StoredQuestion | null {
   const due = dueQuestionIds(20)
   const usable = due.filter((id) => !state.servedIds.includes(id))
   if (usable.length === 0) return null
 
   const placeholders = usable.map(() => '?').join(',')
-  const sectionClause = state.section === 'both' ? '' : 'AND section = ?'
-  const params: string[] = [...usable]
-  if (state.section !== 'both') params.push(state.section)
-
   const row = db
-    .prepare(`SELECT * FROM questions WHERE id IN (${placeholders}) ${sectionClause} LIMIT 1`)
-    .get(...params) as Row | undefined
+    .prepare(`SELECT * FROM questions WHERE id IN (${placeholders}) AND section = ? LIMIT 1`)
+    .get(...usable, section) as Row | undefined
 
   return row ? hydrate(row) : null
 }
@@ -206,24 +240,28 @@ export type Pick =
  * error, so the caller can ask the generator for exactly that and try again.
  */
 export function nextQuestion(state: SessionState, random = Math.random): Pick {
+  // Whose turn it is comes first: everything below stays inside this one section,
+  // including the fallbacks, so nothing can quietly unbalance the session.
+  const section = targetSection(state, random)
+
   // Review first, but only up to its share of the session, so a backlog of due
   // items cannot crowd out new material entirely.
   const reviewShare = state.served === 0 ? 0 : state.reviewsServed / state.served
   if (reviewShare < REVIEW_SHARE) {
-    const review = takeDueReview(state)
+    const review = takeDueReview(state, section)
     if (review) return { kind: 'question', question: review, mode: 'review' }
   }
 
-  const subtopic = chooseSubtopic(state, random)
+  const subtopic = chooseSubtopic(state, section, random)
   const target = targetDifficulty(getMastery(subtopic))
 
   const fromBucket = takeFromPool(subtopic, target, state.servedIds)
   if (fromBucket) return { kind: 'question', question: fromBucket, mode: 'drill' }
 
-  // The bucket is dry. Anything unseen beats making you wait, but prefer a
-  // different subtopic so interleaving still holds.
+  // The bucket is dry. Anything unseen in this section beats making you wait, but
+  // prefer a different subtopic so interleaving still holds.
   const recent = state.recentSubtopics.slice(-INTERLEAVE_WINDOW)
-  const anything = takeAnyFromPool(state.section, state.servedIds, recent)
+  const anything = takeAnyFromPool(section, state.servedIds, recent)
   if (anything) return { kind: 'question', question: anything, mode: 'drill' }
 
   const sub = requireSubtopic(subtopic)
@@ -231,11 +269,23 @@ export function nextQuestion(state: SessionState, random = Math.random): Pick {
   return { kind: 'empty', wanted: { subtopic, format, difficulty: target } }
 }
 
-/** Record that a question was served, updating the interleaving window. */
+/**
+ * The last resort, for when the section whose turn it is has nothing in stock and
+ * no question can be written -- the daily call cap is spent, or the generator
+ * failed. A question from the other section is better than an error screen; the
+ * split gets pulled straight again on the following questions, since the counts
+ * decide the turn.
+ */
+export function anyQuestionLeft(state: SessionState): StoredQuestion | null {
+  return takeAnyFromPool(state.section, state.servedIds, state.recentSubtopics.slice(-INTERLEAVE_WINDOW))
+}
+
+/** Record that a question was served, updating the interleaving window and the split. */
 export function noteServed(state: SessionState, q: StoredQuestion, mode: 'drill' | 'review'): void {
   state.servedIds.push(q.id)
   state.recentSubtopics.push(q.subtopic)
   state.served += 1
+  state.sectionCounts[q.section] += 1
   if (mode === 'review') state.reviewsServed += 1
   markServed(q.id)
 }

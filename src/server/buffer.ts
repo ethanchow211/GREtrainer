@@ -68,15 +68,24 @@ export function status(): BufferStatus {
 export type Refill = { subtopic: string; format: Format; difficulty: Difficulty }
 
 /**
- * What to generate next, most valuable first.
+ * How deep a stock to keep per subtopic.
  *
- * Buckets are ranked by how much you need the topic, and only those actually short
- * of stock are included. Format rotates through the ones the subtopic supports so a
- * topic does not fill up with nothing but multiple choice.
+ * In a single-section session that is just the configured depth. In a Mixed session
+ * it is not, because the split is even by *question* while the subtopics are not
+ * even by *count*: quant has 26 of them and verbal 13. Half the questions spread
+ * over 13 buckets means each verbal subtopic comes up twice as often as each quant
+ * one, so it needs twice the stock or verbal runs dry first and you sit waiting for
+ * a question to be written.
  */
-export function refillPlan(section: Section | 'both', depth = config.bufferDepth): Refill[] {
-  const sections: Section[] = section === 'both' ? ['quant', 'verbal'] : [section]
-  const ids = new Set(sections.flatMap((s) => subtopicsFor(s).map((t) => t.id)))
+function depthFor(section: Section, base: number, mixed: boolean): number {
+  if (!mixed) return base
+  const counts = { quant: subtopicsFor('quant').length, verbal: subtopicsFor('verbal').length }
+  return Math.round(base * (Math.max(counts.quant, counts.verbal) / counts[section]))
+}
+
+/** The buckets of one section that are short of stock, most valuable first. */
+function planForSection(section: Section, depth: number): Refill[] {
+  const ids = new Set(subtopicsFor(section).map((t) => t.id))
 
   const ranked = allMastery()
     .filter((m) => ids.has(m.subtopic))
@@ -92,6 +101,34 @@ export function refillPlan(section: Section | 'both', depth = config.bufferDepth
       const format = sub.formats[(r.stock + i) % sub.formats.length] as Format
       plan.push({ subtopic: sub.id, format, difficulty: targetDifficulty(getMastery(sub.id)) })
     }
+  }
+  return plan
+}
+
+/**
+ * What to generate next, most valuable first.
+ *
+ * Buckets are ranked by how much you need the topic, and only those actually short
+ * of stock are included. Format rotates through the ones the subtopic supports so a
+ * topic does not fill up with nothing but multiple choice.
+ *
+ * For a Mixed session the two sections are zipped together rather than merged and
+ * ranked as one list. Merging would let quant, with twice the buckets, monopolise
+ * the front of the queue while verbal -- the section that empties faster -- waited.
+ */
+export function refillPlan(section: Section | 'both', depth = config.bufferDepth): Refill[] {
+  const mixed = section === 'both'
+  if (!mixed) return planForSection(section, depthFor(section, depth, false))
+
+  const verbal = planForSection('verbal', depthFor('verbal', depth, true))
+  const quant = planForSection('quant', depthFor('quant', depth, true))
+
+  const plan: Refill[] = []
+  for (let i = 0; i < Math.max(verbal.length, quant.length); i++) {
+    const v = verbal[i]
+    const q = quant[i]
+    if (v) plan.push(v)
+    if (q) plan.push(q)
   }
   return plan
 }

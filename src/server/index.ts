@@ -7,7 +7,7 @@ import { config, ROOT } from './config.ts'
 import { db, budget, nowIso } from './db.ts'
 import { detectBillingOverrides } from './claude.ts'
 import { resolveClaudeCli } from './resolve-cli.ts'
-import { newSession, nextQuestion, noteServed, type SessionState } from './select.ts'
+import { newSession, nextQuestion, noteServed, anyQuestionLeft, type SessionState } from './select.ts'
 import { toPublic, grade, type Response as AnswerResponse } from './present.ts'
 import { recordMastery, getSchedule, saveSchedule, nextSchedule, qualityFrom, allMastery } from './mastery.ts'
 import { readyCount, runBuffer, startBufferLoop, status as bufferStatus, generateNow } from './buffer.ts'
@@ -143,8 +143,20 @@ app.get('/api/session/:id/next', async (req, res) => {
     return
   }
 
-  // Nothing in stock. Make one now rather than showing an empty screen.
+  // Nothing in stock for whichever section it is the turn of. Make one now rather
+  // than showing an empty screen; if that is impossible, break the even split
+  // rather than the session -- serveSpare falls back to the other section.
+  const serveSpare = (): boolean => {
+    const spare = anyQuestionLeft(state)
+    if (!spare) return false
+    const sub = requireSubtopic(spare.subtopic)
+    noteServed(state, spare, 'drill')
+    res.json({ question: toPublic(spare, 'drill', sub.label, sub.group) })
+    return true
+  }
+
   if (budget().exhausted) {
+    if (serveSpare()) return
     res.status(503).json({
       error: `You have used your ${budget().limit} Claude calls for today, and there are no ready questions left. Raise GRE_MAX_CALLS_PER_DAY in .env, or come back tomorrow.`,
     })
@@ -153,6 +165,7 @@ app.get('/api/session/:id/next', async (req, res) => {
 
   const id = await generateNow(pick.wanted)
   if (!id) {
+    if (serveSpare()) return
     res.status(503).json({ error: 'Could not produce a question just now. Try again in a moment.' })
     return
   }

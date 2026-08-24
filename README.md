@@ -129,6 +129,10 @@ npm start
 Open the address it prints (http://localhost:5174 by default). Pick Quant, Verbal, or
 Mixed, and start answering.
 
+**Mixed is an even split** -- one maths question for every English one, enforced rather
+than left to chance. Whichever measure is behind gets the next question, so stopping at
+any point leaves you with a half-and-half session. Reviews obey the same rule.
+
 The first few questions may take half a minute each while the pool fills. After that a
 background worker keeps a stock of verified questions ready in the topics you are weakest
 at, so you never wait.
@@ -149,6 +153,13 @@ at, so you never wait.
 
 ## What it does while you drill
 
+- **Keeps maths and English even.** In Mixed mode the two alternate: the section with
+  fewer questions so far always gets the next one, so the running counts never differ
+  by more than one. This has to be enforced, because quant has 26 subtopics to verbal's
+  13 -- picking a topic purely by weakness would hand out two maths questions for every
+  English one just because there are more maths buckets to land in. The background
+  generator matches it, keeping twice the stock per verbal subtopic since each of them
+  comes up twice as often.
 - **Picks topics by weakness.** Each subtopic carries a running estimate of your accuracy
   along with how uncertain that estimate still is, so topics you are bad at *and* topics
   barely measured both come up. Percent-correct is useless at three questions; this is

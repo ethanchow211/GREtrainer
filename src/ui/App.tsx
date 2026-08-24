@@ -142,7 +142,7 @@ function StartScreen({
 
       <div className="grid gap-3 sm:grid-cols-3">
         {[
-          { id: 'both', label: 'Mixed', hint: 'Quant and Verbal together, the way the test runs' },
+          { id: 'both', label: 'Mixed', hint: 'Half maths, half English, strictly alternating' },
           { id: 'quant', label: 'Quant', hint: `${status?.ready.quant ?? 0} ready` },
           { id: 'verbal', label: 'Verbal', hint: `${status?.ready.verbal ?? 0} ready` },
         ].map((opt) => (
