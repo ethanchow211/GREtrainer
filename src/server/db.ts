@@ -134,6 +134,20 @@ CREATE TABLE IF NOT EXISTS meta (
   key   TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
+
+-- A printed practice sheet. The running order is decided once, when the sheet is
+-- generated, and stored here so the screen serves exactly what is on the paper --
+-- selection is weighted-random, so re-deciding it later would not agree.
+CREATE TABLE IF NOT EXISTS worksheets (
+  id           TEXT PRIMARY KEY,
+  created_at   TEXT NOT NULL,
+  pages        INTEGER NOT NULL,
+  -- Ordered JSON array of question ids.
+  question_ids TEXT NOT NULL,
+  html_path    TEXT,
+  -- Set once the sheet has been worked through on screen.
+  finished_at  TEXT
+);
 `)
 
 export function nowIso(): string {

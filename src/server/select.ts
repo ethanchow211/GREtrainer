@@ -39,6 +39,14 @@ export type SessionState = {
   served: number
   /** How many questions from each section have been served this session. */
   sectionCounts: Record<Section, number>
+  /**
+   * A fixed running order, used by paper worksheets. When one is set the selection
+   * engine steps through it instead of choosing, which is the only way a printed
+   * sheet and the screen can be guaranteed to agree. Once it runs out the session
+   * carries on choosing normally.
+   */
+  playlist?: string[]
+  playlistPos?: number
 }
 
 export function newSession(section: Section | 'both'): SessionState {
@@ -50,6 +58,17 @@ export function newSession(section: Section | 'both'): SessionState {
     served: 0,
     sectionCounts: { quant: 0, verbal: 0 },
   }
+}
+
+/** A session that serves an already-decided list of questions, in that exact order. */
+export function newPaperSession(questionIds: string[]): SessionState {
+  return { ...newSession('both'), playlist: [...questionIds], playlistPos: 0 }
+}
+
+/** How far through a fixed running order the session is. Null when there is not one. */
+export function playlistProgress(state: SessionState): { position: number; total: number } | null {
+  if (!state.playlist) return null
+  return { position: Math.min(state.playlistPos ?? 0, state.playlist.length), total: state.playlist.length }
 }
 
 /**
@@ -203,6 +222,12 @@ export function takeAnyFromPool(
   return row ? hydrate(row) : null
 }
 
+/** One specific question, whether or not it has been served before. */
+export function takeById(id: string): StoredQuestion | null {
+  const row = db.prepare('SELECT * FROM questions WHERE id = ?').get(id) as Row | undefined
+  return row ? hydrate(row) : null
+}
+
 /**
  * A question that has fallen due for review, from the section it is this section's
  * turn to serve. Reviews are held to the same even split as new material -- letting
@@ -240,6 +265,17 @@ export type Pick =
  * error, so the caller can ask the generator for exactly that and try again.
  */
 export function nextQuestion(state: SessionState, random = Math.random): Pick {
+  // A fixed running order overrides everything below it. Anything that has gone
+  // missing from the bank is skipped rather than stalling the session on it.
+  while (state.playlist && (state.playlistPos ?? 0) < state.playlist.length) {
+    const id = state.playlist[state.playlistPos ?? 0] as string
+    state.playlistPos = (state.playlistPos ?? 0) + 1
+    const q = takeById(id)
+    if (q && !state.servedIds.includes(q.id)) {
+      return { kind: 'question', question: q, mode: 'drill' }
+    }
+  }
+
   // Whose turn it is comes first: everything below stays inside this one section,
   // including the fallbacks, so nothing can quietly unbalance the session.
   const section = targetSection(state, random)
@@ -280,12 +316,21 @@ export function anyQuestionLeft(state: SessionState): StoredQuestion | null {
   return takeAnyFromPool(state.section, state.servedIds, state.recentSubtopics.slice(-INTERLEAVE_WINDOW))
 }
 
-/** Record that a question was served, updating the interleaving window and the split. */
-export function noteServed(state: SessionState, q: StoredQuestion, mode: 'drill' | 'review'): void {
+/**
+ * The in-memory half of serving a question: the interleaving window, the even split
+ * and the no-repeats set. Kept separate from noteServed so a worksheet can be planned
+ * by running the real selection engine forward without marking anything as seen.
+ */
+export function notePicked(state: SessionState, q: StoredQuestion, mode: 'drill' | 'review'): void {
   state.servedIds.push(q.id)
   state.recentSubtopics.push(q.subtopic)
   state.served += 1
   state.sectionCounts[q.section] += 1
   if (mode === 'review') state.reviewsServed += 1
+}
+
+/** Record that a question was served, updating the interleaving window and the split. */
+export function noteServed(state: SessionState, q: StoredQuestion, mode: 'drill' | 'review'): void {
+  notePicked(state, q, mode)
   markServed(q.id)
 }

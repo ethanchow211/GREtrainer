@@ -17,7 +17,8 @@
     "start": "node src/server/index.ts",
     "snapshot": "node scripts/snapshot.ts",
     "restore": "node scripts/snapshot.ts restore",
-    "reset-progress": "node scripts/reset-progress.ts"
+    "reset-progress": "node scripts/reset-progress.ts",
+    "worksheet": "node scripts/worksheet.ts"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",

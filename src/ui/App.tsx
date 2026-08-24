@@ -10,6 +10,8 @@ import {
   type Coaching,
   type GradeResult,
   type MasteryRow,
+  type PaperProgress,
+  type PendingWorksheet,
   type PublicQuestion,
   type Stats,
   type Status,
@@ -106,6 +108,14 @@ function StartScreen({
   setError: (e: string | null) => void
 }) {
   const [starting, setStarting] = useState(false)
+  const [sheet, setSheet] = useState<PendingWorksheet | null>(null)
+
+  useEffect(() => {
+    api
+      .worksheet()
+      .then((r) => setSheet(r.worksheet))
+      .catch(() => undefined)
+  }, [])
 
   async function begin(section: string): Promise<void> {
     setStarting(true)
@@ -138,6 +148,23 @@ function StartScreen({
           <strong>Claude is not reachable.</strong>
           <p className="mt-1">{cliBroken}</p>
         </div>
+      )}
+
+      {sheet && (
+        <button
+          type="button"
+          disabled={starting}
+          onClick={() => void begin('paper')}
+          className="w-full rounded-xl border-2 border-slate-800 px-5 py-4 text-left transition hover:bg-slate-50 disabled:opacity-50 dark:border-slate-300 dark:hover:bg-slate-900"
+        >
+          <div className="font-medium">Paper worksheet</div>
+          <div className="mt-1 text-xs text-slate-500">
+            {sheet.answered > 0
+              ? `${sheet.answered} of ${sheet.total} logged — picks up where you stopped`
+              : `${sheet.total} questions, ${sheet.pages} printed pages`}
+            . Serves exactly what is on the paper, in the printed order.
+          </div>
+        </button>
       )}
 
       <div className="grid gap-3 sm:grid-cols-3">
@@ -177,6 +204,7 @@ function Drill({ onError, onStatusChange }: { onError: (e: string | null) => voi
   const [response, setResponse] = useState<AnswerResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [waitingLong, setWaitingLong] = useState(false)
+  const [paper, setPaper] = useState<PaperProgress | null>(null)
   const startedAt = useRef<number>(Date.now())
 
   const load = useCallback(async () => {
@@ -187,8 +215,9 @@ function Drill({ onError, onStatusChange }: { onError: (e: string | null) => voi
     setResponse(null)
     const slow = setTimeout(() => setWaitingLong(true), 2500)
     try {
-      const { question: q } = await api.next(activeSession)
+      const { question: q, paper: p } = await api.next(activeSession)
       setQuestion(q)
+      setPaper(p)
       startedAt.current = Date.now()
     } catch (e) {
       onError((e as Error).message)
@@ -236,6 +265,11 @@ function Drill({ onError, onStatusChange }: { onError: (e: string | null) => voi
     <div className="space-y-6">
       <div className="flex items-center justify-between text-xs text-slate-500">
         <span>
+          {paper && paper.position <= paper.total && (
+            <span className="mr-2 rounded bg-slate-800 px-1.5 py-0.5 font-medium text-white dark:bg-slate-200 dark:text-slate-900">
+              paper {paper.position} / {paper.total}
+            </span>
+          )}
           {question.group} · {question.subtopicLabel}
           {question.mode === 'review' && (
             <span className="ml-2 rounded bg-slate-200 px-1.5 py-0.5 dark:bg-slate-800">review</span>

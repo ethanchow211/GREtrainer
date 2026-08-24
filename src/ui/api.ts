@@ -124,6 +124,18 @@ export type VocabCard = {
 
 export type VocabStats = { total: number; due: number; pending: number; learned: number }
 
+export type PendingWorksheet = {
+  id: string
+  createdAt: string
+  pages: number
+  htmlPath: string | null
+  answered: number
+  total: number
+}
+
+/** How far through a printed sheet the session is, when it is running one. */
+export type PaperProgress = { position: number; total: number }
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
     ...init,
@@ -149,12 +161,18 @@ export const api = {
   stats: () => request<Stats>('/api/stats'),
 
   startSession: (section: string) =>
-    request<{ sessionId: string; section: string }>('/api/session', {
-      method: 'POST',
-      body: JSON.stringify({ section }),
-    }),
+    request<{ sessionId: string; section: string; worksheet?: { id: string; answered: number; total: number } }>(
+      '/api/session',
+      { method: 'POST', body: JSON.stringify({ section }) },
+    ),
 
-  next: (sessionId: string) => request<{ question: PublicQuestion }>(`/api/session/${sessionId}/next`),
+  next: (sessionId: string) =>
+    request<{ question: PublicQuestion; paper: PaperProgress | null }>(`/api/session/${sessionId}/next`),
+
+  worksheet: () => request<{ worksheet: PendingWorksheet | null }>('/api/worksheet'),
+
+  finishWorksheet: (id: string) =>
+    request<{ ok: true }>(`/api/worksheet/${id}/finish`, { method: 'POST' }),
 
   answer: (sessionId: string, questionId: string, response: AnswerResponse, seconds: number) =>
     request<GradeResult>(`/api/session/${sessionId}/answer`, {

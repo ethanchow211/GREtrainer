@@ -111,6 +111,7 @@ gauge of how hard you are leaning on the subscription.
 | `src/server/select.ts` | Which question to ask next. |
 | `src/server/buffer.ts` | The background worker that keeps questions ready. |
 | `src/server/mock.ts` | Timed mock exams and the score estimate. |
+| `src/server/worksheet.ts` | Printable sheets: page packing, and the frozen running order. |
 | `src/server/stats.ts` | The error breakdown — why questions get missed. |
 | `src/server/vocab.ts` | The vocabulary deck. |
 | `src/ui/` | The interface. |
@@ -148,6 +149,7 @@ at, so you never wait.
 | `npm run review` | Print stored questions so you can judge their quality yourself. |
 | `npm test` | Run the unit tests. |
 | `npm run typecheck` | Check the types without running anything. |
+| `npm run worksheet` | Print a paper practice sheet and pin its order. |
 | `npm run snapshot` | Dump the database to JSON in `data/snapshot/`, to commit. |
 | `npm run restore` | Rebuild the database from that JSON on another machine. |
 
@@ -176,6 +178,49 @@ at, so you never wait.
   Equivalence question and every word it offered enters a deck — wrong options
   included, since those are usually what made it hard. Definitions are written a dozen
   at a time, so the deck costs almost nothing to build.
+
+## Working on paper
+
+Screens are a bad place to do arithmetic. `npm run worksheet` prints the questions
+you are about to be asked, with room to work under each one, and the app then serves
+those same questions in that same order so every answer still gets recorded.
+
+```
+npm run worksheet
+```
+
+That writes `data/worksheet.html`. Open it in a browser and print it (Ctrl+P). The
+file carries its own maths fonts, so it prints correctly from anywhere and can be
+emailed or copied to another machine.
+
+Then start the app, and the start screen offers **Paper worksheet** as a fourth
+option alongside Mixed, Quant and Verbal. Work a problem on paper, click the same
+answer on screen, move on. The header shows `paper 4 / 14` so you can see you have
+not lost your place.
+
+Everything is recorded exactly as if you had worked on screen: time per question,
+topic estimates, the review schedule, the vocabulary harvest. The only thing the app
+cannot see is the working you did on paper.
+
+| Command | What it does |
+| --- | --- |
+| `npm run worksheet` | Ten pages, the default. |
+| `npm run worksheet -- --pages 4` | A shorter sheet. |
+| `npm run worksheet -- --answers` | Append an answer key at the end. |
+| `npm run worksheet -- --reprint` | Print the pending sheet again, same order. |
+
+> [!note]
+> The order has to be frozen when the sheet is printed, not worked out again later.
+> Topic choice is weighted-random, so running the selection engine twice gives two
+> different sessions -- the sheet would not match. Printing decides the order once
+> and stores it; the app replays it.
+
+No Claude calls are made and no quota is spent: a worksheet only draws on questions
+already in the bank. If the bank is too small to fill the pages you asked for, it
+says so and prints what it can.
+
+A sheet stays pending until every question on it has been answered, so closing the
+browser part-way through is fine -- restarting picks up where you stopped.
 
 ## Mock exams
 

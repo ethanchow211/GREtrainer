@@ -7,7 +7,21 @@ import { config, ROOT } from './config.ts'
 import { db, budget, nowIso } from './db.ts'
 import { detectBillingOverrides } from './claude.ts'
 import { resolveClaudeCli } from './resolve-cli.ts'
-import { newSession, nextQuestion, noteServed, anyQuestionLeft, type SessionState } from './select.ts'
+import {
+  newSession,
+  newPaperSession,
+  nextQuestion,
+  noteServed,
+  anyQuestionLeft,
+  playlistProgress,
+  type SessionState,
+} from './select.ts'
+import {
+  pendingWorksheet,
+  getWorksheet,
+  finishWorksheet,
+  worksheetProgress,
+} from './worksheet.ts'
 import { toPublic, grade, type Response as AnswerResponse } from './present.ts'
 import { recordMastery, getSchedule, saveSchedule, nextSchedule, qualityFrom, allMastery } from './mastery.ts'
 import { readyCount, runBuffer, startBufferLoop, status as bufferStatus, generateNow } from './buffer.ts'
@@ -115,15 +129,74 @@ function req_section(v: unknown): Section | null {
 // ------------------------------------------------------------------------ sessions
 
 app.post('/api/session', (req, res) => {
-  const raw = (req.body ?? {}) as { section?: string }
-  const section = raw.section === 'quant' || raw.section === 'verbal' ? raw.section : 'both'
+  const raw = (req.body ?? {}) as { section?: string; worksheetId?: string }
   const id = randomUUID()
+
+  // A paper session replays a running order decided when the sheet was printed,
+  // so what is on the desk and what is on the screen cannot drift apart.
+  if (raw.section === 'paper' || raw.worksheetId) {
+    const sheet = raw.worksheetId ? getWorksheet(raw.worksheetId) : pendingWorksheet()
+    if (!sheet) {
+      res.status(404).json({ error: 'There is no printed worksheet waiting. Run `npm run worksheet` first.' })
+      return
+    }
+    // Anything already answered is skipped, so a half-finished sheet resumes
+    // where it stopped rather than starting over.
+    const answered = new Set(
+      (
+        db
+          .prepare(
+            `SELECT DISTINCT question_id AS id FROM attempts WHERE question_id IN (${sheet.questionIds
+              .map(() => '?')
+              .join(',')})`,
+          )
+          .all(...sheet.questionIds) as Array<{ id: string }>
+      ).map((r) => r.id),
+    )
+    const remaining = sheet.questionIds.filter((q) => !answered.has(q))
+    sessions.set(id, newPaperSession(remaining))
+    res.json({ sessionId: id, section: 'both', worksheet: { id: sheet.id, ...worksheetProgress(sheet) } })
+    return
+  }
+
+  const section = raw.section === 'quant' || raw.section === 'verbal' ? raw.section : 'both'
   sessions.set(id, newSession(section))
 
   // Start filling the pool for whatever they picked, without blocking the response.
   void runBuffer(section).catch(() => undefined)
 
   res.json({ sessionId: id, section })
+})
+
+app.get('/api/worksheet', (_req, res) => {
+  const sheet = pendingWorksheet()
+  if (!sheet) {
+    res.json({ worksheet: null })
+    return
+  }
+  const progress = worksheetProgress(sheet)
+  // A sheet with every question answered has served its purpose; retire it here so
+  // the start screen stops offering it and the next one printed becomes the pending
+  // one.
+  if (progress.total > 0 && progress.answered >= progress.total) {
+    finishWorksheet(sheet.id)
+    res.json({ worksheet: null })
+    return
+  }
+  res.json({
+    worksheet: {
+      id: sheet.id,
+      createdAt: sheet.createdAt,
+      pages: sheet.pages,
+      htmlPath: sheet.htmlPath,
+      ...worksheetProgress(sheet),
+    },
+  })
+})
+
+app.post('/api/worksheet/:id/finish', (req, res) => {
+  finishWorksheet(req.params.id)
+  res.json({ ok: true })
 })
 
 app.get('/api/session/:id/next', async (req, res) => {
@@ -139,7 +212,10 @@ app.get('/api/session/:id/next', async (req, res) => {
     const sub = requireSubtopic(pick.question.subtopic)
     noteServed(state, pick.question, pick.mode)
     void runBuffer(state.section).catch(() => undefined) // top up behind them
-    res.json({ question: toPublic(pick.question, pick.mode, sub.label, sub.group) })
+    res.json({
+      question: toPublic(pick.question, pick.mode, sub.label, sub.group),
+      paper: playlistProgress(state),
+    })
     return
   }
 

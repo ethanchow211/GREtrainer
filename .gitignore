@@ -13,3 +13,7 @@ dist/
 # The JSON snapshot IS committed -- it is how progress moves between machines.
 !data/snapshot/
 data/*.before-reset
+
+# Printed worksheets are generated from the bank on demand; the order that matters
+# lives in the database, not in the HTML.
+data/worksheet.html
