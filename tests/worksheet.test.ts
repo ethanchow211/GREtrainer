@@ -118,13 +118,19 @@ test('a worksheet never repeats a question', () => {
   assert.equal(new Set(ids).size, ids.length)
 })
 
-test('a worksheet is half quant and half verbal, like the sessions it stands in for', () => {
-  const plan = planWorksheet(10)
+test('worksheets split quant and verbal like a Mixed session does', () => {
+  // Nothing has been answered in this test database, so neither section is weaker
+  // and the split should be even on average. Each sheet is a random draw (Mixed no
+  // longer strictly alternates), so this looks at twenty sheets together rather
+  // than demanding that any single sheet comes out exactly half and half.
   const counts = { quant: 0, verbal: 0 }
-  for (const item of plan.items) counts[requireSubtopic(item.question.subtopic).section] += 1
+  for (let i = 0; i < 20; i++) {
+    for (const item of planWorksheet(10).items) counts[requireSubtopic(item.question.subtopic).section] += 1
+  }
+  const quantFraction = counts.quant / (counts.quant + counts.verbal)
   assert.ok(
-    Math.abs(counts.quant - counts.verbal) <= 1,
-    `sheet came out ${counts.quant} quant to ${counts.verbal} verbal`,
+    quantFraction > 0.4 && quantFraction < 0.6,
+    `twenty sheets came out ${counts.quant} quant to ${counts.verbal} verbal`,
   )
 })
 

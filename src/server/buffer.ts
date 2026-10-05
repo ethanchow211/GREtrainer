@@ -5,7 +5,7 @@ import { generateQuestion } from './generate.ts'
 import { verifyQuestion } from './verify.ts'
 import { saveQuestion, recentStems } from './store.ts'
 import { allMastery, needScore, getMastery } from './mastery.ts'
-import { targetDifficulty } from './select.ts'
+import { targetDifficulty, sectionShare } from './select.ts'
 import { requireSubtopic, subtopicsFor, type Difficulty, type Format, type Section } from '../content/taxonomy.ts'
 import { fillDefinitions } from './vocab.ts'
 
@@ -71,16 +71,25 @@ export type Refill = { subtopic: string; format: Format; difficulty: Difficulty 
  * How deep a stock to keep per subtopic.
  *
  * In a single-section session that is just the configured depth. In a Mixed session
- * it is not, because the split is even by *question* while the subtopics are not
- * even by *count*: quant has 26 of them and verbal 13. Half the questions spread
- * over 13 buckets means each verbal subtopic comes up twice as often as each quant
- * one, so it needs twice the stock or verbal runs dry first and you sit waiting for
- * a question to be written.
+ * it is not, for two reasons:
+ *
+ *   - The sections get different shares of the questions (see sectionShare in
+ *     select.ts): the one you are weaker at comes up more, so it needs more stock.
+ *   - The sections have different numbers of subtopics: quant has 26 and verbal 13.
+ *     The same share of questions spread over fewer buckets means each bucket comes
+ *     up more often, so each needs a deeper stock.
+ *
+ * Together: the total kept for Mixed is the same as an even split would keep (the
+ * configured depth over the larger section, twice), and each section gets its share
+ * of that total, divided across its own subtopics. Never less than one per bucket,
+ * so the section you are good at still has something ready when its turn comes.
  */
 function depthFor(section: Section, base: number, mixed: boolean): number {
   if (!mixed) return base
   const counts = { quant: subtopicsFor('quant').length, verbal: subtopicsFor('verbal').length }
-  return Math.round(base * (Math.max(counts.quant, counts.verbal) / counts[section]))
+  const mixedTotal = 2 * base * Math.max(counts.quant, counts.verbal)
+  const forThisSection = mixedTotal * sectionShare(section)
+  return Math.max(1, Math.round(forThisSection / counts[section]))
 }
 
 /** The buckets of one section that are short of stock, most valuable first. */
@@ -112,23 +121,36 @@ function planForSection(section: Section, depth: number): Refill[] {
  * of stock are included. Format rotates through the ones the subtopic supports so a
  * topic does not fill up with nothing but multiple choice.
  *
- * For a Mixed session the two sections are zipped together rather than merged and
- * ranked as one list. Merging would let quant, with twice the buckets, monopolise
- * the front of the queue while verbal -- the section that empties faster -- waited.
+ * For a Mixed session the two sections are merged by share rather than ranked as
+ * one list. Ranking as one list would let quant, with twice the buckets, monopolise
+ * the front of the queue. Instead, each next slot goes to whichever section is
+ * furthest behind its share so far -- so if English gets 80% of the questions, about
+ * four of every five questions written next are English too.
  */
 export function refillPlan(section: Section | 'both', depth = config.bufferDepth): Refill[] {
   const mixed = section === 'both'
   if (!mixed) return planForSection(section, depthFor(section, depth, false))
 
-  const verbal = planForSection('verbal', depthFor('verbal', depth, true))
-  const quant = planForSection('quant', depthFor('quant', depth, true))
+  const lists = {
+    verbal: planForSection('verbal', depthFor('verbal', depth, true)),
+    quant: planForSection('quant', depthFor('quant', depth, true)),
+  }
+  const share = { verbal: sectionShare('verbal'), quant: sectionShare('quant') }
+  const taken = { verbal: 0, quant: 0 }
 
   const plan: Refill[] = []
-  for (let i = 0; i < Math.max(verbal.length, quant.length); i++) {
-    const v = verbal[i]
-    const q = quant[i]
-    if (v) plan.push(v)
-    if (q) plan.push(q)
+  while (taken.verbal < lists.verbal.length || taken.quant < lists.quant.length) {
+    // Once one list is used up, the rest of the other follows.
+    let next: Section
+    if (taken.verbal >= lists.verbal.length) next = 'quant'
+    else if (taken.quant >= lists.quant.length) next = 'verbal'
+    else {
+      // "Behind" means: items taken so far, measured against that section's share.
+      // The section with the smaller ratio is the one that has had less than its due.
+      next = (taken.verbal + 1) / share.verbal <= (taken.quant + 1) / share.quant ? 'verbal' : 'quant'
+    }
+    plan.push(lists[next][taken[next]] as Refill)
+    taken[next] += 1
   }
   return plan
 }

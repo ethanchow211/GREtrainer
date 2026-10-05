@@ -137,10 +137,6 @@ function StartScreen({
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">What are you drilling?</h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-400">
-          Questions are written fresh by Claude and checked before you see them. The topics you are weakest
-          at come up most.
-        </p>
       </div>
 
       {cliBroken && (
@@ -169,7 +165,7 @@ function StartScreen({
 
       <div className="grid gap-3 sm:grid-cols-3">
         {[
-          { id: 'both', label: 'Mixed', hint: 'Half maths, half English, strictly alternating' },
+          { id: 'both', label: 'Mixed', hint: 'Both sections, leaning toward your weaker one' },
           { id: 'quant', label: 'Quant', hint: `${status?.ready.quant ?? 0} ready` },
           { id: 'verbal', label: 'Verbal', hint: `${status?.ready.verbal ?? 0} ready` },
         ].map((opt) => (
@@ -186,12 +182,6 @@ function StartScreen({
         ))}
       </div>
 
-      {status && status.budget.remaining < 10 && (
-        <p className="text-sm text-amber-700 dark:text-amber-400">
-          {status.budget.remaining} Claude calls left today. Once they run out you can still work through
-          questions already prepared, but no new ones will be written until tomorrow.
-        </p>
-      )}
     </div>
   )
 }

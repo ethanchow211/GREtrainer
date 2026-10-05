@@ -1,7 +1,7 @@
 import { callClaude } from './claude.ts'
 import { db, nowIso, recordCall, budget } from './db.ts'
 import { config } from './config.ts'
-import { requireSubtopic, type Format } from '../content/taxonomy.ts'
+import { QC_OPTIONS, requireSubtopic, type Format } from '../content/taxonomy.ts'
 import { errorTagsFor } from '../content/errors.ts'
 import type { StoredQuestion } from './store.ts'
 
@@ -36,14 +36,19 @@ export type Coaching = {
   cached: boolean
 }
 
-function cacheKey(response: unknown): string {
-  return JSON.stringify(response)
+function cacheKey(response: unknown, format?: Format): string {
+  const responseJson = JSON.stringify(response)
+
+  // Older QC notes were generated before the fixed choices were translated
+  // into words. Give only those notes a new key so a previously incorrect note
+  // is regenerated, while valid coaching for every other format stays cached.
+  return format === 'qc' ? `qc-v2:${responseJson}` : responseJson
 }
 
-export function getCached(questionId: string, response: unknown): Coaching | null {
+export function getCached(questionId: string, response: unknown, format?: Format): Coaching | null {
   const row = db
     .prepare('SELECT note FROM coaching WHERE question_id = ? AND response_key = ?')
-    .get(questionId, cacheKey(response)) as { note: string } | undefined
+    .get(questionId, cacheKey(response, format)) as { note: string } | undefined
   if (!row) return null
   try {
     return { ...(JSON.parse(row.note) as Omit<Coaching, 'cached'>), cached: true }
@@ -52,11 +57,11 @@ export function getCached(questionId: string, response: unknown): Coaching | nul
   }
 }
 
-function save(questionId: string, response: unknown, c: Omit<Coaching, 'cached'>): void {
+function save(questionId: string, response: unknown, format: Format, c: Omit<Coaching, 'cached'>): void {
   db.prepare(
     `INSERT INTO coaching (question_id, response_key, note, created_at) VALUES (?, ?, ?, ?)
      ON CONFLICT(question_id, response_key) DO UPDATE SET note = excluded.note`,
-  ).run(questionId, cacheKey(response), JSON.stringify(c), nowIso())
+  ).run(questionId, cacheKey(response, format), JSON.stringify(c), nowIso())
 }
 
 /** A plain-text rendering of what was asked and what was picked. */
@@ -85,7 +90,7 @@ export async function coach(
   chosenText: string,
   correctText: string,
 ): Promise<Coaching | { error: string }> {
-  const cached = getCached(q.id, response)
+  const cached = getCached(q.id, response, q.format)
   if (cached) return cached
 
   if (budget().exhausted) {
@@ -137,7 +142,7 @@ ${tags.map((t) => `    ${t.id} -- ${t.label}: ${t.hint}`).join('\n')}
   const errorTag = valid.has(res.data.errorTag) ? res.data.errorTag : 'careless-other'
 
   const note = { diagnosis: res.data.diagnosis, errorTag, nextTime: res.data.nextTime }
-  save(q.id, response, note)
+  save(q.id, response, q.format, note)
   return { ...note, cached: false }
 }
 
@@ -151,6 +156,14 @@ export function describeResponse(format: Format, payload: Record<string, unknown
     const blanks = payload.blanks as Array<{ options: string[] }> | undefined
     if (!blanks || !r.indices) return JSON.stringify(response)
     return r.indices.map((idx, i) => `blank ${i + 1}: "${blanks[i]?.options[idx] ?? '?'}"`).join(', ')
+  }
+
+  // Quantitative Comparison choices are fixed and therefore are not stored in
+  // the generated payload. Translate their indices explicitly so the coach sees
+  // "The relationship cannot be determined..." instead of opaque JSON such as
+  // {"indices":[3]}.
+  if (format === 'qc' && r.indices) {
+    return r.indices.map((index) => `"${QC_OPTIONS[index] ?? '?'}"`).join(' and ')
   }
 
   const options = payload.options as string[] | undefined

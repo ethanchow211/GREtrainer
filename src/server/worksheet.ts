@@ -29,7 +29,7 @@ import type {
  * stored, the paper is rendered from it, and the app is told to serve that list.
  *
  * Nothing about how a question gets chosen changes -- this is the same weakness
- * weighting, interleaving, even quant/verbal split and difficulty targeting the
+ * weighting, interleaving, quant/verbal lean and difficulty targeting the
  * screen would have used. It is only frozen earlier.
  */
 

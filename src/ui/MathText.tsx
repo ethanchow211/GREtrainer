@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import katex from 'katex'
 import { splitMath } from './math-split.ts'
+import { renderText } from './text-format.ts'
 
 /**
  * Renders text with mathematics embedded in it.
@@ -36,7 +37,7 @@ export function MathText({ children, className }: Props) {
   const html = useMemo(() => {
     return splitMath(children ?? '')
       .map((seg) => {
-        if (seg.kind === 'text') return escapeHtml(seg.text).replace(/\n/g, '<br />')
+        if (seg.kind === 'text') return renderText(seg.text)
         if (seg.kind === 'inline') return renderTex(seg.tex, false)
         // A display equation gets its own centred block, the way it would be set
         // in a textbook -- that is why the generator reached for $$ in the first place.

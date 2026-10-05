@@ -2,6 +2,7 @@ import { callClaude, type Usage } from './claude.ts'
 import { recordCall, budget } from './db.ts'
 import { config } from './config.ts'
 import { schemaForFormat, type Generated } from './schemas.ts'
+import { shuffleChoices } from './shuffle.ts'
 import { requireSubtopic, type Difficulty, type Format, type Subtopic } from '../content/taxonomy.ts'
 
 /**
@@ -43,6 +44,10 @@ Formatting:
 - When the explanation refers to an option, name it by the LETTER it will be shown
   with -- the first option is A, the second B, and so on. Never call it "option 1"
   or "the third choice": the reader sees letters, and a mismatch is confusing.
+  Always write the letter as "option B" or in brackets after the option's wording,
+  like "nebulous (A)" -- never as a bare letter such as "B is wrong". The options
+  are shuffled after you write them and the letters rewritten to match, which only
+  works when each letter is clearly marked as naming an option.
 `.trim()
 
 const DIFFICULTY_GUIDE: Record<Difficulty, string> = {
@@ -200,5 +205,10 @@ Set the "difficulty" field to your honest assessment of what you actually wrote,
   })
 
   if (!res.ok) return { ok: false, error: res.error }
-  return { ok: true, data: res.data, subtopic, usage: res.usage }
+
+  // Claude puts the right answer near the top of the list far more often than
+  // chance. Shuffle verbal options here, before the question is checked and saved,
+  // so the checker, the database and the screen all see the same order.
+  const data = shuffleChoices(req.format, res.data)
+  return { ok: true, data, subtopic, usage: res.usage }
 }

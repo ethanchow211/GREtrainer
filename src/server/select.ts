@@ -16,9 +16,8 @@ import type { Generated } from './schemas.ts'
  *     row. Practising one topic in a block feels more productive and demonstrably
  *     works worse than mixing topics up.
  *
- * On top of those, a Mixed session is held to an even split: one maths question for
- * every English one. See targetSection below for why that has to be enforced rather
- * than left to the weighting.
+ * On top of those, a Mixed session leans toward whichever section you are weaker at,
+ * with each section kept to at least a fifth of the questions. See targetSection.
  */
 
 /** At most this share of a session is review rather than new material. */
@@ -72,24 +71,78 @@ export function playlistProgress(state: SessionState): { position: number; total
 }
 
 /**
+ * In a Mixed session, neither section ever drops below this share of the questions,
+ * however strong you are at it. Without a floor, a perfect maths record would stop
+ * maths coming up at all, and you would never find out if it had slipped.
+ */
+const MIN_SECTION_SHARE = 0.2
+
+/**
+ * How much a whole section needs attention, on the same 0-to-1 scale as needScore.
+ *
+ * Every answer in the section is pooled into one section-wide estimate (the
+ * successes and failures added up across its subtopics, on top of the usual 2-and-2
+ * starting point), and needScore is applied to that. Pooling rather than averaging
+ * the subtopics matters: averaging would let the twenty-odd quant subtopics you have
+ * not touched yet drown out a run of correct maths answers, and the split would
+ * barely move. Pooled, ten maths questions right in a row is ten pieces of evidence
+ * about maths, wherever they landed.
+ */
+export function sectionNeed(section: Section): number {
+  const ids = new Set(subtopicsFor(section).map((t) => t.id))
+  let alpha = 2
+  let beta = 2
+  for (const m of allMastery()) {
+    if (!ids.has(m.subtopic)) continue
+    // Each subtopic starts at alpha = beta = 2; only what you added counts as evidence.
+    alpha += m.alpha - 2
+    beta += m.beta - 2
+  }
+  const n = alpha + beta
+  const mean = alpha / n
+  const sd = Math.sqrt((alpha * beta) / (n * n * (n + 1)))
+  return needScore({ subtopic: section, alpha, beta, attempts: 0, mean, sd })
+}
+
+/**
+ * The share of a Mixed session that should be maths, between 0.2 and 0.8.
+ *
+ * Proportional to need: if maths needs twice the attention English does, maths gets
+ * twice the questions. The rest goes to English.
+ */
+export function quantShare(): number {
+  const quant = sectionNeed('quant')
+  const verbal = sectionNeed('verbal')
+  const share = quant / (quant + verbal)
+  return Math.min(1 - MIN_SECTION_SHARE, Math.max(MIN_SECTION_SHARE, share))
+}
+
+/** The share of a Mixed session that should be this section. */
+export function sectionShare(section: Section): number {
+  const quant = quantShare()
+  return section === 'quant' ? quant : 1 - quant
+}
+
+/**
  * Which section the next question must come from.
  *
- * In a Mixed session the split is enforced rather than left to chance: whichever
- * section is behind gets the next question, and a tie is broken at random. The two
- * running counts can therefore never differ by more than one, so any Mixed session
- * -- of any length, stopped at any point -- is half maths and half English.
+ * In a Mixed session this is a weighted coin toss, leaning toward whichever section
+ * you are weaker at (see quantShare). Get every maths question right and the coin
+ * comes up English most of the time; miss a run of English and it swings back. The
+ * share is recalculated before every question, so the session follows you as your
+ * answers come in.
  *
- * It has to be enforced because quant has twice as many subtopics as verbal. Picking
- * a subtopic by need across the pooled list, which is what used to happen, handed out
- * roughly two quant questions for every verbal one purely because there were more
- * quant buckets to land in.
+ * The section is chosen first, before any subtopic, on purpose. Quant has twice as
+ * many subtopics as verbal, so picking a subtopic by need across one pooled list
+ * would hand out about two maths questions for every English one just because there
+ * are more maths buckets to land in.
+ *
+ * (This used to strictly alternate, one maths then one English. Ethan asked for it
+ * to follow his weaknesses instead, on 2026-10-01.)
  */
 export function targetSection(state: SessionState, random = Math.random): Section {
   if (state.section !== 'both') return state.section
-  const { quant, verbal } = state.sectionCounts
-  if (quant < verbal) return 'quant'
-  if (verbal < quant) return 'verbal'
-  return random() < 0.5 ? 'quant' : 'verbal'
+  return random() < quantShare() ? 'quant' : 'verbal'
 }
 
 /** Difficulty to aim for, from how well you are doing at that subtopic. */
@@ -230,7 +283,7 @@ export function takeById(id: string): StoredQuestion | null {
 
 /**
  * A question that has fallen due for review, from the section it is this section's
- * turn to serve. Reviews are held to the same even split as new material -- letting
+ * turn to serve. Reviews follow the same section choice as new material -- letting
  * them ignore it would be an easy way for a backlog in one measure to take the
  * session over.
  */
@@ -309,16 +362,15 @@ export function nextQuestion(state: SessionState, random = Math.random): Pick {
  * The last resort, for when the section whose turn it is has nothing in stock and
  * no question can be written -- the daily call cap is spent, or the generator
  * failed. A question from the other section is better than an error screen; the
- * split gets pulled straight again on the following questions, since the counts
- * decide the turn.
+ * next question goes back to choosing a section by weakness as normal.
  */
 export function anyQuestionLeft(state: SessionState): StoredQuestion | null {
   return takeAnyFromPool(state.section, state.servedIds, state.recentSubtopics.slice(-INTERLEAVE_WINDOW))
 }
 
 /**
- * The in-memory half of serving a question: the interleaving window, the even split
- * and the no-repeats set. Kept separate from noteServed so a worksheet can be planned
+ * The in-memory half of serving a question: the interleaving window, the section
+ * counts and the no-repeats set. Kept separate from noteServed so a worksheet can be planned
  * by running the real selection engine forward without marking anything as seen.
  */
 export function notePicked(state: SessionState, q: StoredQuestion, mode: 'drill' | 'review'): void {
@@ -329,7 +381,7 @@ export function notePicked(state: SessionState, q: StoredQuestion, mode: 'drill'
   if (mode === 'review') state.reviewsServed += 1
 }
 
-/** Record that a question was served, updating the interleaving window and the split. */
+/** Record that a question was served, updating the interleaving window and the section counts. */
 export function noteServed(state: SessionState, q: StoredQuestion, mode: 'drill' | 'review'): void {
   notePicked(state, q, mode)
   markServed(q.id)

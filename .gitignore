@@ -17,3 +17,8 @@ data/*.before-reset
 # Printed worksheets are generated from the bank on demand; the order that matters
 # lives in the database, not in the HTML.
 data/worksheet.html
+
+# Backup copies made before edits (code and the progress database). They stay on
+# this Mac; they should never be published.
+*.bak.*
+data/*.db.bak*

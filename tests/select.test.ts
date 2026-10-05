@@ -9,7 +9,7 @@ import { join } from 'node:path'
 const scratch = mkdtempSync(join(tmpdir(), 'gre-select-'))
 process.env.GRE_DB_PATH = join(scratch, 'test.db')
 
-const { newSession, targetSection, chooseSubtopic, noteServed } = await import('../src/server/select.ts')
+const { newSession, targetSection, chooseSubtopic, noteServed, sectionShare } = await import('../src/server/select.ts')
 const { refillPlan } = await import('../src/server/buffer.ts')
 const { requireSubtopic, subtopicsFor } = await import('../src/content/taxonomy.ts')
 const { recordMastery } = await import('../src/server/mastery.ts')
@@ -40,26 +40,25 @@ function fakeQuestion(subtopic: string, n: number) {
   }
 }
 
-// ------------------------------------------------------------------- the even split
+// ------------------------------------------------------------------- the mixed split
 
-test('a mixed session alternates sections, never drifting by more than one', () => {
+test('a fresh mixed session is roughly even, and every pick stays in its section', () => {
+  // Nothing answered yet, so neither section is weaker: the coin should be fair.
+  // (The strict one-maths-one-English alternation was removed on 2026-10-01.)
   const state = newSession('both')
   const counts = { quant: 0, verbal: 0 }
 
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < 400; i++) {
     const section = targetSection(state)
     const subtopic = chooseSubtopic(state, section)
-    // Whatever weakness picked, it has to belong to the section whose turn it was.
+    // Whatever weakness picked, it has to belong to the section that was chosen.
     assert.equal(requireSubtopic(subtopic).section, section)
-
     counts[section] += 1
-    assert.ok(Math.abs(counts.quant - counts.verbal) <= 1, `drifted at question ${i}`)
-
     noteServed(state, fakeQuestion(subtopic, i), 'drill')
   }
 
-  assert.equal(counts.quant, 100)
-  assert.equal(counts.verbal, 100)
+  // 400 fair coin tosses land between 160 and 240 heads all but ~0.01% of the time.
+  assert.ok(counts.quant > 160 && counts.quant < 240, `quant ${counts.quant}, verbal ${counts.verbal}`)
 })
 
 test('a single-section session stays in that section', () => {
@@ -96,20 +95,24 @@ test('weakness still steers the choice inside a section', () => {
 
 // ------------------------------------------------------------------- keeping stocked
 
-test('the mixed refill plan interleaves sections and stocks verbal deeper', () => {
+test('the mixed refill plan interleaves sections and stocks them by share', () => {
   const plan = refillPlan('both', 4)
   const sectionOf = (r: { subtopic: string }) => requireSubtopic(r.subtopic).section
 
-  // Alternating, so neither section waits behind the whole of the other.
+  // Interleaved, so neither section waits behind the whole of the other.
   const first = plan.slice(0, 10).map(sectionOf)
   assert.ok(first.includes('quant') && first.includes('verbal'))
 
-  // Verbal has half the subtopics but takes half the questions, so each of its
-  // buckets is stocked proportionally deeper -- the totals should roughly match.
+  // The earlier test made quant look shaky, so quant's share is no longer exactly a
+  // half. Whatever it is, the stock should be split in about the same proportion.
   const totals = { quant: 0, verbal: 0 }
   for (const r of plan) totals[sectionOf(r)] += 1
   const ratio = totals.verbal / totals.quant
-  assert.ok(ratio > 0.8 && ratio < 1.25, `verbal/quant refill ratio was ${ratio.toFixed(2)}`)
+  const expected = sectionShare('verbal') / sectionShare('quant')
+  assert.ok(
+    ratio > expected * 0.8 && ratio < expected * 1.25,
+    `verbal/quant refill ratio was ${ratio.toFixed(2)}, expected about ${expected.toFixed(2)}`,
+  )
 })
 
 test('a single-section refill plan only names that section', () => {
